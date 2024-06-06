@@ -25,6 +25,7 @@ import { useDispatch } from "react-redux";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import goalList from "../../../../utils/data/goalList.js";
 import { useSnackbar } from "notistack";
+import SmartDisplayIcon from "@mui/icons-material/SmartDisplay";
 
 const filter = createFilterOptions();
 
@@ -245,6 +246,26 @@ const ISCCreatorHeader = ({
           <Grid container justifyContent="flex-end" alignItems="center">
             <Grid item>
               <Grid container spacing={2} alignItems="center">
+                <Grid item>
+                  <Tooltip
+                    arrow
+                    title={
+                      <Typography variant="body2" sx={{ p: 1 }}>
+                        How to use ISC Creator?
+                      </Typography>
+                    }
+                    placement="top"
+                  >
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      href="http://www.google.com"  //TODO: Link hinzufuegen
+                      target="_blank"
+                    >
+                      <SmartDisplayIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
                 <Grid item>
                   <Tooltip
                     title={
