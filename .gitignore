@@ -134,3 +134,4 @@ dist
 
 # DS
 .DS_Store
+*.xml
