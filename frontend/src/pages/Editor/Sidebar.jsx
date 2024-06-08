@@ -261,8 +261,17 @@ const Sidebar = ({ open, testUser }) => {
                 </List>
               </Collapse>
             </List>
-
+             
             <List>
+              <Tooltip
+                title={
+                  <Typography fontSize={15}>
+                    Indicators
+                  </Typography>
+                }
+                disableHoverListener={expanded}
+                placement="right"
+              >
               <ListItemButton onClick={() => setOpenIndicator(!openIndicator)}>
                 <ListItemIcon>
                   <BarChartIcon />
@@ -272,6 +281,8 @@ const Sidebar = ({ open, testUser }) => {
                 />
                 {openIndicator ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItemButton>
+            </Tooltip>
+
               <Collapse in={openIndicator} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {indicatorMenus.map((menu, index) => {
@@ -299,6 +310,16 @@ const Sidebar = ({ open, testUser }) => {
             </List>
 
             <List>
+            <Tooltip
+                title={
+                  <Typography fontSize={15}>
+                    Goal-Question-Indicator
+                  </Typography>
+                }
+                disableHoverListener={expanded}
+                placement="right"
+               >
+              
               <ListItemButton onClick={() => setOpenGQI(!openGQI)}>
                 <ListItemIcon>
                   <QuizIcon />
@@ -308,6 +329,7 @@ const Sidebar = ({ open, testUser }) => {
                 />
                 {openGQI ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItemButton>
+              </Tooltip>
               <Collapse in={openGQI} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {gqiMenus.map((menu, index) => {
@@ -335,6 +357,15 @@ const Sidebar = ({ open, testUser }) => {
             </List>
 
             <List>
+            <Tooltip
+                title={
+                  <Typography fontSize={15}>
+                    Tools
+                  </Typography>
+                }
+                disableHoverListener={expanded}
+                placement="right"
+              >
               <ListItemButton onClick={() => setOpenTools(!openTools)}>
                 <ListItemIcon>
                   <ArchitectureIcon />
@@ -345,6 +376,7 @@ const Sidebar = ({ open, testUser }) => {
                 />
                 {openTools ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItemButton>
+              </Tooltip>
               <Collapse in={openTools} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {toolsMenu.map((menu, index) => {
