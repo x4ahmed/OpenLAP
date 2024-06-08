@@ -59,12 +59,10 @@ const Sidebar = ({ open, testUser }) => {
     openSignOutModal: false,
   });
 
-  // Common styles variable
-//   const expandedCommonStyles = (expanded) => ({
-//     overflow: "hidden",
-//     transition: "all 0.3s ease",
-//     width: expanded ? "auto" : "0",
-//   });
+//   Common styles variable
+  const expandedCommonStyles = (expanded) => ({
+    ...(expanded ? { pl: 4 } : { pl: 3 }),
+  });
 
   const iscMenus = [
     {
@@ -164,12 +162,14 @@ const Sidebar = ({ open, testUser }) => {
         anchor="left"
         open={open}
         sx={{
-          zIndex: open ? 3 : 0,
+          overflow: "hidden",
           width: drawerWidth,
-          flexShrink: 0,
+          ...(expanded
+            ? { whiteSpace: "normal" }
+            : { whiteSpace: "nowrap" }),
           "& .MuiDrawer-paper": {
+            overflow: "hidden",
             width: drawerWidth,
-            boxSizing: "border-box",
           },
         }}
       >
@@ -179,8 +179,6 @@ const Sidebar = ({ open, testUser }) => {
             sx={{
               height: 40,
               ...{ overflow: "hidden" },
-              ...{ transition: "all 0.3s ease" },
-              ...(expanded ? { width: "8rem" } : { width: "0" }),
               ...(!open && { display: "none" }),
             }}
             src={openLAPLogo}
@@ -231,7 +229,6 @@ const Sidebar = ({ open, testUser }) => {
                     <StyleIcon />
                   </ListItemIcon>
                   <ListItemText
-                    // sx={expandedCommonStyles(expanded)}
                     primary="Indicator Specification Cards (ISC)"
                   />
                   {openISC ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -242,7 +239,9 @@ const Sidebar = ({ open, testUser }) => {
                   {iscMenus.map((menu, index) => {
                     return (
                       <ListItemButton
-                        sx={{ pl: 4 }}
+                        sx={{
+                          ...expandedCommonStyles(expanded),
+                        }}
                         onClick={() => {
                           navigate(menu.navigate);
                           dispatch(setSidebarMenu(menu.navigate));
@@ -251,11 +250,7 @@ const Sidebar = ({ open, testUser }) => {
                         disabled={menu.disabled}
                         selected={selectedMenu === menu.navigate}
                       >
-                        <ListItemIcon > 
-                            
-                          {" "}
-                          {menu.icon}{" "}
-                        </ListItemIcon>
+                        <ListItemIcon> {menu.icon} </ListItemIcon>
                         <ListItemText
                           primary={menu.primary}
                           secondary={menu.secondary}
@@ -273,7 +268,6 @@ const Sidebar = ({ open, testUser }) => {
                   <BarChartIcon />
                 </ListItemIcon>
                 <ListItemText
-                    //   sx={expandedCommonStyles(expanded)}
                   primary={"Indicators"}
                 />
                 {openIndicator ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -283,7 +277,7 @@ const Sidebar = ({ open, testUser }) => {
                   {indicatorMenus.map((menu, index) => {
                     return (
                       <ListItemButton
-                        sx={{ pl: 4 }}
+                        sx={{ ...expandedCommonStyles(expanded) }}
                         onClick={() => {
                           navigate(menu.navigate);
                           dispatch(setSidebarMenu(menu.navigate));
@@ -310,7 +304,6 @@ const Sidebar = ({ open, testUser }) => {
                   <QuizIcon />
                 </ListItemIcon>
                 <ListItemText
-                    //   sx={expandedCommonStyles(expanded)}
                   primary={"Goal-Question-Indicator"}
                 />
                 {openGQI ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -320,7 +313,7 @@ const Sidebar = ({ open, testUser }) => {
                   {gqiMenus.map((menu, index) => {
                     return (
                       <ListItemButton
-                        sx={{ pl: 4 }}
+                        sx={{ ...expandedCommonStyles(expanded) }}
                         onClick={() => {
                           navigate(menu.navigate);
                           dispatch(setSidebarMenu(menu.navigate));
@@ -347,7 +340,7 @@ const Sidebar = ({ open, testUser }) => {
                   <ArchitectureIcon />
                 </ListItemIcon>
                 <ListItemText
-                    //   sx={expandedCommonStyles(expanded)}
+                  //   sx={expandedCommonStyles(expanded)}
                   primary={"Tools"}
                 />
                 {openTools ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -357,7 +350,7 @@ const Sidebar = ({ open, testUser }) => {
                   {toolsMenu.map((menu, index) => {
                     return (
                       <ListItemButton
-                        sx={{ pl: 4 }}
+                        sx={{ ...expandedCommonStyles(expanded) }}
                         onClick={() => {
                           navigate(menu.navigate);
                           dispatch(setSidebarMenu(menu.navigate));
@@ -389,11 +382,7 @@ const Sidebar = ({ open, testUser }) => {
                 <LogoutIcon />
               </ListItemIcon>
             )}
-            {expanded && (
-              <ListItemText>
-                SIGNOUT
-              </ListItemText>
-            )}
+            {expanded && <ListItemText>SIGNOUT</ListItemText>}
           </Button>
         </div>
       </Drawer>
