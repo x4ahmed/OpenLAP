@@ -259,7 +259,7 @@ const ISCCreatorHeader = ({
                     <IconButton
                       size="small"
                       color="primary"
-                      href="http://www.google.com"  //TODO: Link hinzufuegen
+                      href="https://youtu.be/DbSOaCXwPNk"  //TODO: Link hinzufuegen
                       target="_blank"
                     >
                       <SmartDisplayIcon />
