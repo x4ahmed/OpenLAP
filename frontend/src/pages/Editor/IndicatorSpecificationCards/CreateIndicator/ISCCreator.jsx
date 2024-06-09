@@ -29,6 +29,7 @@ import ISCCreatorHeader from "./ISCCreatorHeader";
 import ChartList from "./Visualization/components/ChartList";
 
 export default function ISCCreator() {
+  const [activeStep, setActiveStep] = useState(0);
   const [expandVisualization, setExpandVisualization] = useState(true);
   const [expandDataset, setExpandDataset] = useState(true);
   const [dataState, setDataState] = useState(
@@ -99,9 +100,11 @@ export default function ISCCreator() {
   const toggleUserCreatesIndicator = (reset) => {
     if (reset) {
       setUserCreatesIndicator(false);
+      setActiveStep(0);
       return;
     }
     setUserCreatesIndicator((prevState) => !prevState);
+    setActiveStep(activeStep+1);
   };
 
   const resetChartSelected = () => {
@@ -417,6 +420,8 @@ export default function ISCCreator() {
             userCreatesIndicator={userCreatesIndicator}
             handleResetIndicator={handleResetIndicator}
             toggleUserCreatesIndicator={toggleUserCreatesIndicator}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
           />
           {userCreatesIndicator && (
             <>

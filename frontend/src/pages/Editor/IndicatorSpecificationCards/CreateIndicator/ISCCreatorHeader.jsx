@@ -12,6 +12,9 @@ import {
   TextField,
   Tooltip,
   Typography,
+  Stepper, 
+  Step,
+  StepLabel
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -34,11 +37,13 @@ const ISCCreatorHeader = ({
   handleResetIndicator,
   toggleUserCreatesIndicator,
   userCreatesIndicator,
+  activeStep,
+  setActiveStep
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-
+  
   function sortGoalList(goalList) {
     return goalList.sort((a, b) => {
       const nameA = a.name.toUpperCase(); // ignore case
@@ -63,7 +68,6 @@ const ISCCreatorHeader = ({
     str.charAt(0).toUpperCase() + str.slice(1);
   const lowercaseFirstLetter = (str) =>
     str.charAt(0).toLowerCase() + str.slice(1);
-
   const [indicatorGoal, setIndicatorGoal] = useState(
     JSON.parse(sessionStorage.getItem("openlap-isc-data"))?.indicatorGoal ||
       null
@@ -232,9 +236,23 @@ const ISCCreatorHeader = ({
     setDeleteDialog(false);
     toggleUserCreatesIndicator("reset");
   };
+  const steps = ['Fill the informations of the indicator',
+    'Choose the start method',
+    '',
+    ''
+  ];
 
   return (
     <>
+      <Box sx={{ width: '100%'}}>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
       <Grid
         container
         justifyContent="space-between"
