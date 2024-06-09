@@ -18,6 +18,7 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     @Override
     public boolean saveISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request) {
         try {
+            iscIndicatorDTO.setCreatedBy(request.getUserPrincipal().getName());
             iscIndicatorRepo.save(iscIndicatorDTO.toISCIndicator());
             return true;
         } catch (Exception e) {

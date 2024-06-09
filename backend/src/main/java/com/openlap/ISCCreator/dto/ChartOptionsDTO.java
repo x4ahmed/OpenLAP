@@ -2,6 +2,7 @@ package com.openlap.ISCCreator.dto;
 
 import com.openlap.ISCCreator.model.ChartOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChartOptionsDTO {
@@ -107,19 +108,19 @@ public class ChartOptionsDTO {
         this.stroke = strokeDTO;
     }
 
-    public ChartOptions toChartOptions() {
-        ChartOptions chartOptions = new ChartOptions();
-        chartOptions.setChart(this.chart.toChartDetails());
-        chartOptions.setXaxis(this.xaxis.toXAxis());
-        chartOptions.setHeaderNameOptions(this.headerNameOptions);
-        chartOptions.setHeaderNameSeries(this.headerNameSeries);
-        chartOptions.setLabels(this.labels);
-        chartOptions.setDefaultOption(this.defaultOption);
-        chartOptions.setLegend(this.legendDTO.toLegend());
-        chartOptions.setName(this.name);
-        chartOptions.setPlotOptions(this.plotOptions.toPlotOptions());
-        chartOptions.setTooltip(this.tooltip.toTooltip());
-        chartOptions.setStroke(this.stroke.toStroke());
-        return chartOptions;
-    }
+public ChartOptions toChartOptions() {
+    ChartOptions chartOptions = new ChartOptions();
+    chartOptions.setChart(this.chart != null ? this.chart.toChartDetails() : null);
+    chartOptions.setXaxis(this.xaxis != null ? this.xaxis.toXAxis() : null);
+    chartOptions.setHeaderNameOptions(this.headerNameOptions != null ? this.headerNameOptions : "");
+    chartOptions.setHeaderNameSeries(this.headerNameSeries != null ? this.headerNameSeries : "");
+    chartOptions.setLabels(this.labels != null ? new ArrayList<>(this.labels) : null);
+    chartOptions.setDefaultOption(this.defaultOption);
+    chartOptions.setLegend(this.legendDTO != null ? this.legendDTO.toLegend() : null);
+    chartOptions.setName(this.name != null ? this.name : "");
+    chartOptions.setPlotOptions(this.plotOptions != null ? this.plotOptions.toPlotOptions() : null);
+    chartOptions.setTooltip(this.tooltip != null ? this.tooltip.toTooltip() : null);
+    chartOptions.setStroke(this.stroke != null ? this.stroke.toStroke() : null);
+    return chartOptions;
+}
 }

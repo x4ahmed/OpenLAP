@@ -2,6 +2,7 @@ package com.openlap.ISCCreator.dto;
 
 import com.openlap.ISCCreator.model.ISCIndicator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,21 +127,21 @@ public class ISCIndicatorDTO {
         this.createdBy = createdBy;
     }
 
-    public ISCIndicator toISCIndicator() {
-        ISCIndicator iscIndicator = new ISCIndicator();
-        iscIndicator.setId(this.id);
-        iscIndicator.setCreatedBy(this.createdBy);
-        iscIndicator.setChartName(this.chartName);
-        iscIndicator.setChartOptions(this.chartOptions.toChartOptions());
-        iscIndicator.setChartSeries(this.chartSeries);
-        iscIndicator.setChartType(this.chartTypeDTO.toChartType());
-        iscIndicator.setIndicatorData(this.indicatorData.toIndicatorData());
-        iscIndicator.setIndicatorGoal(this.indicatorGoal.toIndicatorGoal());
-        iscIndicator.setIndicatorGoalText(this.indicatorGoalText);
-        iscIndicator.setIndicatorName(this.indicatorName);
-        iscIndicator.setIndicatorQuestion(this.indicatorQuestion);
-        iscIndicator.setIndicatorDataArray(this.indicatorDataArray.stream().map(IndicatorDataArrayDTO::toIndicatorDataArray).collect(Collectors.toList()));
-        iscIndicator.setLastUpdated(this.lastUpdated);
-        return iscIndicator;
-    }
+public ISCIndicator toISCIndicator() {
+    ISCIndicator iscIndicator = new ISCIndicator();
+    iscIndicator.setId(this.id != null ? this.id : "");
+    iscIndicator.setCreatedBy(this.createdBy != null ? this.createdBy : "");
+    iscIndicator.setChartName(this.chartName != null ? this.chartName : "");
+    iscIndicator.setChartOptions(this.chartOptions != null ? this.chartOptions.toChartOptions() : null);
+    iscIndicator.setChartSeries(this.chartSeries != null ? this.chartSeries : new ArrayList<>());
+    iscIndicator.setChartType(this.chartTypeDTO != null ? this.chartTypeDTO.toChartType() : null);
+    iscIndicator.setIndicatorData(this.indicatorData != null ? this.indicatorData.toIndicatorData() : null);
+    iscIndicator.setIndicatorGoal(this.indicatorGoal != null ? this.indicatorGoal.toIndicatorGoal() : null);
+    iscIndicator.setIndicatorGoalText(this.indicatorGoalText != null ? this.indicatorGoalText : "");
+    iscIndicator.setIndicatorName(this.indicatorName != null ? this.indicatorName : "");
+    iscIndicator.setIndicatorQuestion(this.indicatorQuestion != null ? this.indicatorQuestion : "");
+    iscIndicator.setIndicatorDataArray(this.indicatorDataArray != null ? this.indicatorDataArray.stream().map(IndicatorDataArrayDTO::toIndicatorDataArray).collect(Collectors.toList()) : new ArrayList<>());
+    iscIndicator.setLastUpdated(this.lastUpdated != null ? this.lastUpdated : "");
+    return iscIndicator;
+}
 }
