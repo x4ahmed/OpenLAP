@@ -5,6 +5,7 @@ import java.util.List;
 public class ISCIndicator {
     @Id
     private String id;
+    private String createdBy;
     private String chartName;
     private ChartOptions chartOptions;
     private List<Integer> chartSeries;
@@ -113,5 +114,13 @@ public class ISCIndicator {
 
     public void setLastUpdated(String lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

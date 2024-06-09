@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 
 @Configuration
-@EnableMongoRepositories(basePackages = {"com.openlap.AnalyticsEngine.repo"})
+@EnableMongoRepositories(basePackages = {"com.openlap.AnalyticsEngine.repo", "com.openlap.ISCCreator.repo"})
 @PropertySource("classpath:mongo.properties")
 public class MongoConfig extends AbstractMongoConfiguration {
 	@Autowired

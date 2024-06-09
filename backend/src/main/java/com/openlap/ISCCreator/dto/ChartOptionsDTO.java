@@ -1,35 +1,37 @@
-package com.openlap.ISCCreator.model;
+package com.openlap.ISCCreator.dto;
+
+import com.openlap.ISCCreator.model.ChartOptions;
 
 import java.util.List;
 
-public class ChartOptions {
-    private ChartDetails chart;
-    private XAxis xaxis;
+public class ChartOptionsDTO {
+    private ChartDetailsDTO chart;
+    private XAxisDTO xaxis;
     private String headerNameOptions;
     private String headerNameSeries;
     private List<String> labels;
     private boolean defaultOption;
-    private Legend legend;
+    private LegendDTO legendDTO;
     private String name;
-    private PlotOptions plotOptions;
-    private Tooltip tooltip;
-    private Stroke stroke;
+    private PlotOptionsDTO plotOptions;
+    private TooltipDTO tooltip;
+    private StrokeDTO stroke;
 
     // Getters and Setters
 
-    public ChartDetails getChart() {
+    public ChartDetailsDTO getChart() {
         return chart;
     }
 
-    public void setChart(ChartDetails chart) {
+    public void setChart(ChartDetailsDTO chart) {
         this.chart = chart;
     }
 
-    public XAxis getXaxis() {
+    public XAxisDTO getXaxis() {
         return xaxis;
     }
 
-    public void setXaxis(XAxis xaxis) {
+    public void setXaxis(XAxisDTO xaxis) {
         this.xaxis = xaxis;
     }
 
@@ -65,12 +67,12 @@ public class ChartOptions {
         this.defaultOption = defaultOption;
     }
 
-    public Legend getLegend() {
-        return legend;
+    public LegendDTO getLegend() {
+        return legendDTO;
     }
 
-    public void setLegend(Legend legend) {
-        this.legend = legend;
+    public void setLegend(LegendDTO legendDTO) {
+        this.legendDTO = legendDTO;
     }
 
     public String getName() {
@@ -81,43 +83,43 @@ public class ChartOptions {
         this.name = name;
     }
 
-    public PlotOptions getPlotOptions() {
+    public PlotOptionsDTO getPlotOptions() {
         return plotOptions;
     }
 
-    public void setPlotOptions(PlotOptions plotOptions) {
-        this.plotOptions = plotOptions;
+    public void setPlotOptions(PlotOptionsDTO plotOptionsDTO) {
+        this.plotOptions = plotOptionsDTO;
     }
 
-    public Tooltip getTooltip() {
+    public TooltipDTO getTooltip() {
         return tooltip;
     }
 
-    public void setTooltip(Tooltip tooltip) {
-        this.tooltip = tooltip;
+    public void setTooltip(TooltipDTO tooltipDTO) {
+        this.tooltip = tooltipDTO;
     }
 
-    public Stroke getStroke() {
+    public StrokeDTO getStroke() {
         return stroke;
     }
 
-    public void setStroke(Stroke stroke) {
-        this.stroke = stroke;
+    public void setStroke(StrokeDTO strokeDTO) {
+        this.stroke = strokeDTO;
     }
 
     public ChartOptions toChartOptions() {
         ChartOptions chartOptions = new ChartOptions();
-        chartOptions.setChart(this.chart);
-        chartOptions.setXaxis(this.xaxis);
+        chartOptions.setChart(this.chart.toChartDetails());
+        chartOptions.setXaxis(this.xaxis.toXAxis());
         chartOptions.setHeaderNameOptions(this.headerNameOptions);
         chartOptions.setHeaderNameSeries(this.headerNameSeries);
         chartOptions.setLabels(this.labels);
         chartOptions.setDefaultOption(this.defaultOption);
-        chartOptions.setLegend(this.legend);
+        chartOptions.setLegend(this.legendDTO.toLegend());
         chartOptions.setName(this.name);
-        chartOptions.setPlotOptions(this.plotOptions);
-        chartOptions.setTooltip(this.tooltip);
-        chartOptions.setStroke(this.stroke);
+        chartOptions.setPlotOptions(this.plotOptions.toPlotOptions());
+        chartOptions.setTooltip(this.tooltip.toTooltip());
+        chartOptions.setStroke(this.stroke.toStroke());
         return chartOptions;
     }
 }
