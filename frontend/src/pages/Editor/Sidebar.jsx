@@ -59,28 +59,28 @@ const Sidebar = ({ open, testUser }) => {
     openSignOutModal: false,
   });
 
-// Common styles variable
+  // Common styles variable
 
-const expandedCommonStyles = (expanded) => ({
-  ...(expanded ? { pl: 4 } : { pl: 3 }),
-});
+  const expandedCommonStyles = (expanded) => ({
+    ...(expanded ? { pl: 4 } : { pl: 3 }),
+  });
 
-const iscMenus = [
-  {
-    primary: "ISC Dashboard",
-    secondary: "List of my ISCs",
-    navigate: "/isc",
-    icon: <DashboardIcon />,
-    disabled: false,
-  },
-  {
-    primary: "ISC Creator",
-    secondary: "Create or edit an ISC",
-    navigate: "/isc/creator",
-    icon: <AddchartIcon />,
-    disabled: false,
-  },
-];
+  const iscMenus = [
+    {
+      primary: "ISC Dashboard",
+      secondary: "List of my ISCs",
+      navigate: "/isc",
+      icon: <DashboardIcon />,
+      disabled: false,
+    },
+    {
+      primary: "ISC Creator",
+      secondary: "Create or edit an ISC",
+      navigate: "/isc/creator",
+      icon: <AddchartIcon />,
+      disabled: false,
+    },
+  ];
 
   const gqiMenus = [
     {
@@ -118,7 +118,6 @@ const iscMenus = [
       disabled: testUser,
     },
   ];
-  
 
   const [openGQI, setOpenGQI] = useState(selectedMenu === gqiMenus[0].navigate);
   const [openISC, setOpenISC] = useState(selectedMenu === iscMenus[0].navigate);
@@ -166,9 +165,7 @@ const iscMenus = [
         sx={{
           overflow: "hidden",
           width: drawerWidth,
-          ...(expanded
-            ? { whiteSpace: "normal" }
-            : { whiteSpace: "nowrap" }),
+          ...(expanded ? { whiteSpace: "normal" } : { whiteSpace: "nowrap" }),
           "& .MuiDrawer-paper": {
             overflow: "hidden",
             width: drawerWidth,
@@ -230,246 +227,214 @@ const iscMenus = [
                   <ListItemIcon>
                     <StyleIcon />
                   </ListItemIcon>
-                  <ListItemText
-                    primary="Indicator Specification Cards (ISC)"
-                  />
+                  <ListItemText primary="Indicator Specification Cards (ISC)" />
                   {openISC ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </ListItemButton>
               </Tooltip>
               <Collapse in={openISC} timeout={"auto"} unmountOnExit>
-  <List component="div" disablePadding>
-    {iscMenus.map((menu, index) => {
-      return (
-        <Tooltip
-          key={index}
-          title={
-            <Typography fontSize={15}>
-              {menu.primary}
-            </Typography>
-          }
-          disableHoverListener={expanded}
-          placement="right"
-        >
-          <ListItemButton
-            sx={{
-              ...expandedCommonStyles(expanded),
-            }}
-            onClick={() => {
-              navigate(menu.navigate);
-              dispatch(setSidebarMenu(menu.navigate));
-            }}
-            disabled={menu.disabled}
-            selected={selectedMenu === menu.navigate}
-          >
-            <ListItemIcon> {menu.icon} </ListItemIcon>
-            <ListItemText
-              primary={menu.primary}
-              secondary={menu.secondary}
-            />
-          </ListItemButton>
-        </Tooltip>
-      );
-    })}
-  </List>
-</Collapse>
+                <List component="div" disablePadding>
+                  {iscMenus.map((menu, index) => {
+                    return (
+                      <Tooltip
+                        key={index}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
+                      >
+                        <ListItemButton
+                          sx={{
+                            ...expandedCommonStyles(expanded),
+                          }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
+                    );
+                  })}
+                </List>
+              </Collapse>
             </List>
-             
+
+            <List>
+              <Tooltip
+                title={<Typography fontSize={15}>Indicators</Typography>}
+                disableHoverListener={expanded}
+                placement="right"
+              >
+                <ListItemButton
+                  onClick={() => setOpenIndicator(!openIndicator)}
+                >
+                  <ListItemIcon>
+                    <BarChartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Indicators"} />
+                  {openIndicator ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+              </Tooltip>
+
+              <Collapse in={openIndicator} timeout={"auto"} unmountOnExit>
+                <List component="div" disablePadding>
+                  {indicatorMenus.map((menu, index) => {
+                    return (
+                      <Tooltip
+                        key={index}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
+                      >
+                        <ListItemButton
+                          sx={{ ...expandedCommonStyles(expanded) }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
+                    );
+                  })}
+                </List>
+              </Collapse>
+            </List>
+
             <List>
               <Tooltip
                 title={
-                  <Typography fontSize={15}>
-                    Indicators
-                  </Typography>
+                  <Typography fontSize={15}>Goal-Question-Indicator</Typography>
                 }
                 disableHoverListener={expanded}
                 placement="right"
               >
-              <ListItemButton onClick={() => setOpenIndicator(!openIndicator)}>
-                <ListItemIcon>
-                  <BarChartIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={"Indicators"}
-                />
-                {openIndicator ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItemButton>
-            </Tooltip>
-
-            <Collapse in={openIndicator} timeout={"auto"} unmountOnExit>
-  <List component="div" disablePadding>
-    {indicatorMenus.map((menu, index) => {
-      return (
-        <Tooltip
-          key={index}
-          title={
-            <Typography fontSize={15}>
-              {menu.primary}
-            </Typography>
-          }
-          disableHoverListener={expanded}
-          placement="right"
-        >
-          <ListItemButton
-            sx={{ ...expandedCommonStyles(expanded) }}
-            onClick={() => {
-              navigate(menu.navigate);
-              dispatch(setSidebarMenu(menu.navigate));
-            }}
-            disabled={menu.disabled}
-            selected={selectedMenu === menu.navigate}
-          >
-            <ListItemIcon> {menu.icon} </ListItemIcon>
-            <ListItemText
-              primary={menu.primary}
-              secondary={menu.secondary}
-            />
-          </ListItemButton>
-        </Tooltip>
-      );
-    })}
-  </List>
-</Collapse>
+                <ListItemButton onClick={() => setOpenGQI(!openGQI)}>
+                  <ListItemIcon>
+                    <QuizIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Goal-Question-Indicator"} />
+                  {openGQI ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+              </Tooltip>
+              <Collapse in={openGQI} timeout={"auto"} unmountOnExit>
+                <List component="div" disablePadding>
+                  {gqiMenus.map((menu, index) => {
+                    return (
+                      <Tooltip
+                        key={index}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
+                      >
+                        <ListItemButton
+                          sx={{ ...expandedCommonStyles(expanded) }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
+                    );
+                  })}
+                </List>
+              </Collapse>
             </List>
 
             <List>
-            <Tooltip
-                title={
-                  <Typography fontSize={15}>
-                    Goal-Question-Indicator
-                  </Typography>
-                }
-                disableHoverListener={expanded}
-                placement="right"
-               >
-              
-              <ListItemButton onClick={() => setOpenGQI(!openGQI)}>
-                <ListItemIcon>
-                  <QuizIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={"Goal-Question-Indicator"}
-                />
-                {openGQI ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItemButton>
-              </Tooltip>
-              <Collapse in={openGQI} timeout={"auto"} unmountOnExit>
-  <List component="div" disablePadding>
-    {gqiMenus.map((menu, index) => {
-      return (
-        <Tooltip
-          key={index}
-          title={
-            <Typography fontSize={15}>
-              {menu.primary}
-            </Typography>
-          }
-          disableHoverListener={expanded}
-          placement="reight"
-        >
-          <ListItemButton
-            sx={{ ...expandedCommonStyles(expanded) }}
-            onClick={() => {
-              navigate(menu.navigate);
-              dispatch(setSidebarMenu(menu.navigate));
-            }}
-            disabled={menu.disabled}
-            selected={selectedMenu === menu.navigate}
-          >
-            <ListItemIcon> {menu.icon} </ListItemIcon>
-            <ListItemText
-              primary={menu.primary}
-              secondary={menu.secondary}
-            />
-          </ListItemButton>
-        </Tooltip>
-      );
-    })}
-  </List>
-</Collapse>
-            </List>
-
-             
-              <List>
-                <Tooltip
-                   title={
-                    <Typography fontSize={15}>
-                      Tools
-                    </Typography>
-                }
+              <Tooltip
+                title={<Typography fontSize={15}>Tools</Typography>}
                 disableHoverListener={expanded}
                 placement="right"
               >
-              <ListItemButton onClick={() => setOpenTools(!openTools)}>
-                <ListItemIcon>
-                  <ArchitectureIcon />
-                </ListItemIcon>
-                <ListItemText
-                  //   sx={expandedCommonStyles(expanded)}
-                  primary="Tools"
-                />
-                {openTools ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItemButton>
+                <ListItemButton onClick={() => setOpenTools(!openTools)}>
+                  <ListItemIcon>
+                    <ArchitectureIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Tools"
+                  />
+                  {openTools ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
               </Tooltip>
 
               <Collapse in={openTools} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {toolsMenu.map((menu, index) => {
-                      return (
-                          <Tooltip
-                            key={index}
-                            title={
-                              <Typography fontSize={15}>
-                                {menu.primary}
-                              </Typography>
-                            }
-                            disableHoverListener={expanded}
-                            placement="right"
-                          >
-                            <ListItemButton
-                              sx={{ 
-                                ...expandedCommonStyles(expanded)   
-                              }}
-                              onClick={() => {
-                                navigate(menu.navigate);
-                                dispatch(setSidebarMenu(menu.navigate));
-                              }}
-                              disabled={menu.disabled}
-                              selected={selectedMenu === menu.navigate}
-                            >
-                              <ListItemIcon> {menu.icon} </ListItemIcon>
-                              <ListItemText
-                                primary={menu.primary}
-                                secondary={menu.secondary}
-                              />
-                            </ListItemButton>
-                          </Tooltip>
-                        );
-                      })}
-                    </List>
-                  </Collapse>
+                    return (
+                      <Tooltip
+                        key={index}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
+                      >
+                        <ListItemButton
+                          sx={{
+                            ...expandedCommonStyles(expanded),
+                          }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
+                    );
+                  })}
+                </List>
+              </Collapse>
             </List>
           </div>
 
           <Button onClick={handleSignOutProcess}>
-          {!expanded && (
-  <Tooltip 
-    title={
-      <Typography fontSize={15}>
-        Sign out
-      </Typography>
-    }
-  >
-    <ListItemIcon
-      sx={{
-        padding: "0 15px 5px", // Add padding for the icon when sidebar is collapsed
-      }}
-    >
-      <LogoutIcon />
-    </ListItemIcon>
-  </Tooltip>
-)}
+            {!expanded && (
+              <Tooltip title={<Typography fontSize={15}>Sign out</Typography>}>
+                <ListItemIcon
+                  sx={{
+                    padding: "0 15px 5px", // Add padding for the icon when sidebar is collapsed
+                  }}
+                >
+                  <LogoutIcon />
+                </ListItemIcon>
+              </Tooltip>
+            )}
             {expanded && <ListItemText>SIGNOUT</ListItemText>}
-            
           </Button>
         </div>
       </Drawer>
@@ -495,13 +460,17 @@ const iscMenus = [
         dialogTitle={"Sign out"}
         dialogPrimaryContext={`Are you sure you want to sign out?`}
         openDialog={feedback.openSignOutModal}
-        setOpenDialog={() => handleFeedback("openSignOutModal", feedback.openSignOutModal)}
+        setOpenDialog={() =>
+          handleFeedback("openSignOutModal", feedback.openSignOutModal)
+        }
         primaryAction={handleSignOut}
         primaryButton={"Sign out"}
-        tertiaryAction={() =>handleFeedback("openSignOutModal", feedback.openSignOutModal)}
+        tertiaryAction={() =>
+          handleFeedback("openSignOutModal", feedback.openSignOutModal)
+        }
         tertiaryButton={"Cancel"}
       />
     </>
   );
-}
+};
 export default Sidebar;
