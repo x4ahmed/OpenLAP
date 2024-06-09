@@ -59,27 +59,28 @@ const Sidebar = ({ open, testUser }) => {
     openSignOutModal: false,
   });
 
-//   Common styles variable
-  const expandedCommonStyles = (expanded) => ({
-    ...(expanded ? { pl: 4 } : { pl: 3 }),
-  });
+// Common styles variable
 
-  const iscMenus = [
-    {
-      primary: "ISC Dashboard",
-      secondary: "List of my ISCs",
-      navigate: "/isc",
-      icon: <DashboardIcon />,
-      disabled: false,
-    },
-    {
-      primary: "ISC Creator",
-      secondary: "Create or edit an ISC",
-      navigate: "/isc/creator",
-      icon: <AddchartIcon />,
-      disabled: false,
-    },
-  ];
+const expandedCommonStyles = (expanded) => ({
+  ...(expanded ? { pl: 4 } : { pl: 3 }),
+});
+
+const iscMenus = [
+  {
+    primary: "ISC Dashboard",
+    secondary: "List of my ISCs",
+    navigate: "/isc",
+    icon: <DashboardIcon />,
+    disabled: false,
+  },
+  {
+    primary: "ISC Creator",
+    secondary: "Create or edit an ISC",
+    navigate: "/isc/creator",
+    icon: <AddchartIcon />,
+    disabled: false,
+  },
+];
 
   const gqiMenus = [
     {
@@ -117,6 +118,7 @@ const Sidebar = ({ open, testUser }) => {
       disabled: testUser,
     },
   ];
+  
 
   const [openGQI, setOpenGQI] = useState(selectedMenu === gqiMenus[0].navigate);
   const [openISC, setOpenISC] = useState(selectedMenu === iscMenus[0].navigate);
@@ -235,31 +237,41 @@ const Sidebar = ({ open, testUser }) => {
                 </ListItemButton>
               </Tooltip>
               <Collapse in={openISC} timeout={"auto"} unmountOnExit>
-                <List component="div" disablePadding>
-                  {iscMenus.map((menu, index) => {
-                    return (
-                      <ListItemButton
-                        sx={{
-                          ...expandedCommonStyles(expanded),
-                        }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
-                        key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
-                      >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
-                    );
-                  })}
-                </List>
-              </Collapse>
+  <List component="div" disablePadding>
+    {iscMenus.map((menu, index) => {
+      return (
+        <Tooltip
+          key={index}
+          title={
+            <Typography fontSize={15}>
+              {menu.primary}
+            </Typography>
+          }
+          disableHoverListener={expanded}
+          placement="right"
+        >
+          <ListItemButton
+            sx={{
+              ...expandedCommonStyles(expanded),
+            }}
+            onClick={() => {
+              navigate(menu.navigate);
+              dispatch(setSidebarMenu(menu.navigate));
+            }}
+            disabled={menu.disabled}
+            selected={selectedMenu === menu.navigate}
+          >
+            <ListItemIcon> {menu.icon} </ListItemIcon>
+            <ListItemText
+              primary={menu.primary}
+              secondary={menu.secondary}
+            />
+          </ListItemButton>
+        </Tooltip>
+      );
+    })}
+  </List>
+</Collapse>
             </List>
              
             <List>
@@ -283,30 +295,40 @@ const Sidebar = ({ open, testUser }) => {
               </ListItemButton>
             </Tooltip>
 
-              <Collapse in={openIndicator} timeout={"auto"} unmountOnExit>
-                <List component="div" disablePadding>
-                  {indicatorMenus.map((menu, index) => {
-                    return (
-                      <ListItemButton
-                        sx={{ ...expandedCommonStyles(expanded) }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
-                        key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
-                      >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
-                    );
-                  })}
-                </List>
-              </Collapse>
+            <Collapse in={openIndicator} timeout={"auto"} unmountOnExit>
+  <List component="div" disablePadding>
+    {indicatorMenus.map((menu, index) => {
+      return (
+        <Tooltip
+          key={index}
+          title={
+            <Typography fontSize={15}>
+              {menu.primary}
+            </Typography>
+          }
+          disableHoverListener={expanded}
+          placement="right"
+        >
+          <ListItemButton
+            sx={{ ...expandedCommonStyles(expanded) }}
+            onClick={() => {
+              navigate(menu.navigate);
+              dispatch(setSidebarMenu(menu.navigate));
+            }}
+            disabled={menu.disabled}
+            selected={selectedMenu === menu.navigate}
+          >
+            <ListItemIcon> {menu.icon} </ListItemIcon>
+            <ListItemText
+              primary={menu.primary}
+              secondary={menu.secondary}
+            />
+          </ListItemButton>
+        </Tooltip>
+      );
+    })}
+  </List>
+</Collapse>
             </List>
 
             <List>
@@ -331,37 +353,48 @@ const Sidebar = ({ open, testUser }) => {
               </ListItemButton>
               </Tooltip>
               <Collapse in={openGQI} timeout={"auto"} unmountOnExit>
-                <List component="div" disablePadding>
-                  {gqiMenus.map((menu, index) => {
-                    return (
-                      <ListItemButton
-                        sx={{ ...expandedCommonStyles(expanded) }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
-                        key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
-                      >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
-                    );
-                  })}
-                </List>
-              </Collapse>
+  <List component="div" disablePadding>
+    {gqiMenus.map((menu, index) => {
+      return (
+        <Tooltip
+          key={index}
+          title={
+            <Typography fontSize={15}>
+              {menu.primary}
+            </Typography>
+          }
+          disableHoverListener={expanded}
+          placement="reight"
+        >
+          <ListItemButton
+            sx={{ ...expandedCommonStyles(expanded) }}
+            onClick={() => {
+              navigate(menu.navigate);
+              dispatch(setSidebarMenu(menu.navigate));
+            }}
+            disabled={menu.disabled}
+            selected={selectedMenu === menu.navigate}
+          >
+            <ListItemIcon> {menu.icon} </ListItemIcon>
+            <ListItemText
+              primary={menu.primary}
+              secondary={menu.secondary}
+            />
+          </ListItemButton>
+        </Tooltip>
+      );
+    })}
+  </List>
+</Collapse>
             </List>
 
-            <List>
-            <Tooltip
-                title={
-                  <Typography fontSize={15}>
-                    Tools
-                  </Typography>
+             
+              <List>
+                <Tooltip
+                   title={
+                    <Typography fontSize={15}>
+                      Tools
+                    </Typography>
                 }
                 disableHoverListener={expanded}
                 placement="right"
@@ -372,49 +405,71 @@ const Sidebar = ({ open, testUser }) => {
                 </ListItemIcon>
                 <ListItemText
                   //   sx={expandedCommonStyles(expanded)}
-                  primary={"Tools"}
+                  primary="Tools"
                 />
                 {openTools ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </ListItemButton>
               </Tooltip>
+
               <Collapse in={openTools} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {toolsMenu.map((menu, index) => {
-                    return (
-                      <ListItemButton
-                        sx={{ ...expandedCommonStyles(expanded) }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
-                        key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
-                      >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
-                    );
-                  })}
-                </List>
-              </Collapse>
+                      return (
+                          <Tooltip
+                            key={index}
+                            title={
+                              <Typography fontSize={15}>
+                                {menu.primary}
+                              </Typography>
+                            }
+                            disableHoverListener={expanded}
+                            placement="right"
+                          >
+                            <ListItemButton
+                              sx={{ 
+                                ...expandedCommonStyles(expanded)   
+                              }}
+                              onClick={() => {
+                                navigate(menu.navigate);
+                                dispatch(setSidebarMenu(menu.navigate));
+                              }}
+                              disabled={menu.disabled}
+                              selected={selectedMenu === menu.navigate}
+                            >
+                              <ListItemIcon> {menu.icon} </ListItemIcon>
+                              <ListItemText
+                                primary={menu.primary}
+                                secondary={menu.secondary}
+                              />
+                            </ListItemButton>
+                          </Tooltip>
+                        );
+                      })}
+                    </List>
+                  </Collapse>
             </List>
           </div>
 
           <Button onClick={handleSignOutProcess}>
-            {!expanded && (
-              <ListItemIcon
-                sx={{
-                  padding: "0 15px 5px", // Add padding for the icon when sidebar is collapsed
-                }}
-              >
-                <LogoutIcon />
-              </ListItemIcon>
-            )}
+          {!expanded && (
+  <Tooltip 
+    title={
+      <Typography fontSize={15}>
+        Sign out
+      </Typography>
+    }
+  >
+    <ListItemIcon
+      sx={{
+        padding: "0 15px 5px", // Add padding for the icon when sidebar is collapsed
+      }}
+    >
+      <LogoutIcon />
+    </ListItemIcon>
+  </Tooltip>
+)}
             {expanded && <ListItemText>SIGNOUT</ListItemText>}
+            
           </Button>
         </div>
       </Drawer>
@@ -440,18 +495,13 @@ const Sidebar = ({ open, testUser }) => {
         dialogTitle={"Sign out"}
         dialogPrimaryContext={`Are you sure you want to sign out?`}
         openDialog={feedback.openSignOutModal}
-        setOpenDialog={() =>
-          handleFeedback("openSignOutModal", feedback.openSignOutModal)
-        }
+        setOpenDialog={() => handleFeedback("openSignOutModal", feedback.openSignOutModal)}
         primaryAction={handleSignOut}
         primaryButton={"Sign out"}
-        tertiaryAction={() =>
-          handleFeedback("openSignOutModal", feedback.openSignOutModal)
-        }
+        tertiaryAction={() =>handleFeedback("openSignOutModal", feedback.openSignOutModal)}
         tertiaryButton={"Cancel"}
       />
     </>
   );
-};
-
+}
 export default Sidebar;
