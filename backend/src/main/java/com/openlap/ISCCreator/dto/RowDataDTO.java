@@ -1,12 +1,15 @@
 package com.openlap.ISCCreator.dto;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.openlap.ISCCreator.model.RowData;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class RowDataDTO {
     private String id;
-    private Map<String, Object> values;
+    private Map<String, Object> other = new HashMap<>();
 
     public String getId() {
         return id;
@@ -16,19 +19,20 @@ public class RowDataDTO {
         this.id = id;
     }
 
-    public Map<String, Object> getValues() {
-        return values;
+    @JsonAnyGetter
+    public Map<String, Object> getOther() {
+        return other;
     }
 
-    public void setValues(Map<String, Object> values) {
-        this.values = values;
+    @JsonAnySetter
+    public void setOther(String name, Object value) {
+        other.put(name, value);
     }
 
     public RowData toRowData() {
         RowData rowData = new RowData();
         rowData.setId(this.id);
-        rowData.setValues(this.values);
+        rowData.setValues(this.other);
         return rowData;
     }
-
 }

@@ -1,6 +1,9 @@
 package com.openlap.ISCCreator.model;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class IndicatorGoal {
+    @Field(value = "id")
     private String id;
     private String noun;
     private String name;

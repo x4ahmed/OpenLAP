@@ -129,7 +129,7 @@ public class ISCIndicatorDTO {
 
 public ISCIndicator toISCIndicator() {
     ISCIndicator iscIndicator = new ISCIndicator();
-    iscIndicator.setId(this.id != null ? this.id : "");
+    iscIndicator.setReactId(this.id != null ? this.id : "");
     iscIndicator.setCreatedBy(this.createdBy != null ? this.createdBy : "");
     iscIndicator.setChartName(this.chartName != null ? this.chartName : "");
     iscIndicator.setChartOptions(this.chartOptions != null ? this.chartOptions.toChartOptions() : null);

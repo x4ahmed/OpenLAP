@@ -1,13 +1,23 @@
 package com.openlap.ISCCreator.model;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.hibernate.search.bridge.spi.FieldType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.persistence.GeneratedValue;
 import java.util.List;
 
 @Document(collection = "ISCIndicator")
 public class ISCIndicator {
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
+
+    @Field(value = "id")
+    private String reactId;
     private String createdBy;
     private String chartName;
     private ChartOptions chartOptions;
@@ -23,12 +33,12 @@ public class ISCIndicator {
 
     // Getters and Setters
 
-    public String getId() {
-        return id;
+    public String getReactId() {
+        return reactId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setReactId(String reactId) {
+        this.reactId = reactId;
     }
 
     public String getChartName() {
@@ -125,5 +135,13 @@ public class ISCIndicator {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
