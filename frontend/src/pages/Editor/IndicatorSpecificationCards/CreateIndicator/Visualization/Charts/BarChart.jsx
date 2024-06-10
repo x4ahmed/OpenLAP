@@ -25,6 +25,16 @@ export default function BarChart({
   let chartType = "bar";
   let allowedMultipleEnties = false;
 
+  const colorOptions = [
+    { label: 'Green', value: '#00E396' },
+    { label: 'Red', value: '#FF4560' },
+    { label: 'Blue', value: '#008FFB' },
+    { label: 'Yellow', value: '#FEB019' },
+    { label: 'Purple', value: '#775DD0' }
+  ];
+
+
+
   const [series, setSeries] = useState([
     {
       name: "", // columnName of DataGrid
@@ -41,6 +51,13 @@ export default function BarChart({
         ?.darkMode
         ? "#ffffff"
         : "#000000",
+    },
+    
+    colors:["#00FF00"],
+
+    title: {
+      text: 'My BarChart',
+      align: 'left'
     },
     plotOptions: {
       bar: {
@@ -67,7 +84,7 @@ export default function BarChart({
       onDatasetHover: {
         highlightDataSeries: true,
       },
-    },
+    }
   });
 
   const defaultColumn = [
@@ -789,6 +806,13 @@ export default function BarChart({
     sessionStorage.setItem("chart-series", JSON.stringify(filterSeries));
   };
 
+  const handleColorChange = (e) => {
+    setOptions({
+      ...options,
+      colors: [e.target.value]
+    });
+  };
+
   // Method to count the number of occurrences of each unique value
   const handleSetCountOccurrences = (
     categoricalColumnField,
@@ -823,9 +847,56 @@ export default function BarChart({
       return tempSeries;
     });
   };
+  const handleSortChange = (order) => {
+    const sortedData = [...series[0].data];
+    const sortedCategories = [...options.xaxis.categories];
+    const combined = sortedData.map((value, index) => ({ value, category: sortedCategories[index] }));
 
+    combined.sort((a, b) => (order === 'asc' ? a.value - b.value : b.value - a.value));
+
+    setSeries([{ ...series[0], data: combined.map(item => item.value) }]);
+    setOptions({
+      ...options,
+      xaxis: {
+        ...options.xaxis,
+        categories: combined.map(item => item.category)
+      }
+    });
+  };
+
+  const handleTitleChange = (e) => {
+    setOptions({
+      ...options,
+      title: {
+        ...options.title,
+        text: e.target.value
+      }
+    });
+  };
+  
   return (
     <>
+    <div>
+        <label>Title: </label>
+        <input type="text" value={options.title.text} onChange={handleTitleChange} />
+      </div>
+    <div>
+    <label>Color:     </label>
+        <select value={options.colors[0]} onChange={handleColorChange}>
+          {colorOptions.map((color) => (
+            <option key={color.value} value={color.value}>
+              {color.label}
+            </option>
+          ))}
+        </select>
+    </div>
+
+    <div>
+        <label>Sort By: </label>
+        <button onClick={() => handleSortChange('asc')}>Ascending</button>
+        <button onClick={() => handleSortChange('desc')}>Descending</button>
+      </div>
+
       <Grid container sx={{ minHeight: "45vh" }}>
         <Grid item xs={12} sm={openEditor.open ? 8 : 12}>
           <Grid container alignItems="center">
