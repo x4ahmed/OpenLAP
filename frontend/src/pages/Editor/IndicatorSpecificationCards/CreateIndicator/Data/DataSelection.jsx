@@ -333,7 +333,7 @@ export default function DataSelection({
 
   // Function to add a new column to the dataset
   const handleAddNewColumn = () => {
-    let fieldUUID = uuidv4();
+   let fieldUUID = uuidv4();
     const newColumnData = [
       ...columnData,
       {
@@ -347,6 +347,7 @@ export default function DataSelection({
     ];
     let newRowData = [];
     if (Boolean(rowData.length)) {
+
       newRowData = rowData.map((row, index) => ({
         ...row,
         [fieldUUID]:
@@ -992,7 +993,7 @@ export default function DataSelection({
               }}
               onChange={(e) => setColumnName(e.target.value)}
               variant="outlined"
-            />
+              />
             <Grid container>
               <Grid item xs={12}>
                 <Grid container alignItems="center">
@@ -1078,6 +1079,9 @@ export default function DataSelection({
                     }}
                     onChange={(e) => setNumberOfRows(e.target.value)}
                     variant="outlined"
+                    InputProps={{
+                      inputProps : { min: 1 }
+                    }}
                   />
                 </>
               )}
@@ -1271,11 +1275,12 @@ export default function DataSelection({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (numberOfRows !== 0) {
+            if (numberOfRows > 0) {
               setOpenRowModal(false);
               handleAddNewRows(numberOfRows);
               toggleEditPanel("", false);
             }
+
           }}
         >
           <DialogContent>
@@ -1283,6 +1288,7 @@ export default function DataSelection({
               How many rows would you like to add in the table?
             </Typography>
             <TextField
+              min= "1"
               autoFocus
               fullWidth
               id="filled-number"
@@ -1293,6 +1299,9 @@ export default function DataSelection({
               }}
               onChange={(e) => setNumberOfRows(e.target.value)}
               variant="outlined"
+              InputProps={{
+                inputProps :{ min : 1},
+              }}
             />
           </DialogContent>
           <DialogActions>
@@ -1309,7 +1318,7 @@ export default function DataSelection({
             <Button
               fullWidth
               type="submit"
-              disabled={numberOfRows === 0}
+              disabled={numberOfRows <= 0}
               variant="contained"
             >
               Confirm
