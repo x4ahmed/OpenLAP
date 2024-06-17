@@ -121,7 +121,7 @@ export default function DataSelection({
   const [selectionModel, setSelectionModel] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [value, setValue] = useState("");
-
+  const [error, setError] = useState(false);
   const open = Boolean(anchorEl);
 
   const [anchorElDataTableMenu, setAnchorElDataTableMenu] = useState(null);
@@ -134,6 +134,15 @@ export default function DataSelection({
     setAnchorElDataTableMenu(null);
   };
 
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setNumberOfRows(value);
+    if (value && value < 1) {
+      setError(true);
+    } else {
+      setError(false);
+    }
+  };
   const handlePopperOpen = (event) => {
     const id = event.currentTarget.dataset.id;
     const row = rowData.find((r) => r.id === id);
@@ -333,7 +342,7 @@ export default function DataSelection({
 
   // Function to add a new column to the dataset
   const handleAddNewColumn = () => {
-   let fieldUUID = uuidv4();
+    let fieldUUID = uuidv4();
     const newColumnData = [
       ...columnData,
       {
@@ -347,7 +356,6 @@ export default function DataSelection({
     ];
     let newRowData = [];
     if (Boolean(rowData.length)) {
-
       newRowData = rowData.map((row, index) => ({
         ...row,
         [fieldUUID]:
@@ -685,6 +693,7 @@ export default function DataSelection({
                 {!loading && (
                   <DataGrid
                     apiRef={apiRef}
+                    disableColumnResize={true}
                     // checkboxSelection
                     columns={dataState.columnData}
                     columnMenuClearIcon={<ClearAllIcon />}
@@ -993,7 +1002,7 @@ export default function DataSelection({
               }}
               onChange={(e) => setColumnName(e.target.value)}
               variant="outlined"
-              />
+            />
             <Grid container>
               <Grid item xs={12}>
                 <Grid container alignItems="center">
@@ -1077,10 +1086,14 @@ export default function DataSelection({
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    onChange={(e) => setNumberOfRows(e.target.value)}
                     variant="outlined"
+                    onChange={handleChange}
+                    error={error}
+                    helperText={
+                      error ? "Number of rows must be at least 1" : ""
+                    }
                     InputProps={{
-                      inputProps : { min: 1 }
+                      inputProps: { min: 1 },
                     }}
                   />
                 </>
@@ -1092,6 +1105,7 @@ export default function DataSelection({
               fullWidth
               color="primary"
               onClick={() => {
+                setError(false);
                 setOpenNewColumnNameModal(false);
                 setColumnName("");
                 setColumnNameExist({
@@ -1118,7 +1132,7 @@ export default function DataSelection({
             </Button>
             <Button
               fullWidth
-              disabled={columnName === "" || numberOfRows === 0}
+              disabled={columnName === "" || numberOfRows <= 0}
               type="submit"
               variant="contained"
             >
@@ -1280,7 +1294,6 @@ export default function DataSelection({
               handleAddNewRows(numberOfRows);
               toggleEditPanel("", false);
             }
-
           }}
         >
           <DialogContent>
@@ -1288,7 +1301,7 @@ export default function DataSelection({
               How many rows would you like to add in the table?
             </Typography>
             <TextField
-              min= "1"
+              min="1"
               autoFocus
               fullWidth
               id="filled-number"
@@ -1297,10 +1310,12 @@ export default function DataSelection({
               InputLabelProps={{
                 shrink: true,
               }}
-              onChange={(e) => setNumberOfRows(e.target.value)}
+              onChange={handleChange}
               variant="outlined"
+              error={error}
+              helperText={error ? "Number of rows must be at least 1" : ""}
               InputProps={{
-                inputProps :{ min : 1},
+                inputProps: { min: 1 },
               }}
             />
           </DialogContent>
@@ -1311,6 +1326,7 @@ export default function DataSelection({
               onClick={() => {
                 setOpenRowModal(false);
                 setNumberOfRows(0);
+                setError(false);
               }}
             >
               Cancel
@@ -1365,6 +1381,23 @@ const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
       );
     };
     reader.readAsText(file);
+  };
+
+  const handleDragOver = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  const handleDragEnter = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files[0];
+    setFile(droppedFile);
   };
 
   /**
@@ -1487,6 +1520,9 @@ const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
               borderRadius: 2,
               mb: 1,
             }}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
           >
             <Link component="label" sx={{ cursor: "pointer" }}>
               Click here to select a file to upload
