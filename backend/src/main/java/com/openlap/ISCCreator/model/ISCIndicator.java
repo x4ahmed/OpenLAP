@@ -21,7 +21,7 @@ public class ISCIndicator {
     private String createdBy;
     private String chartName;
     private ChartOptions chartOptions;
-    private List<Integer> chartSeries;
+    private List<ChartSeries> chartSeries;
     private ChartType chartType;
     private IndicatorData indicatorData;
     private IndicatorGoal indicatorGoal;
@@ -57,11 +57,11 @@ public class ISCIndicator {
         this.chartOptions = chartOptions;
     }
 
-    public List<Integer> getChartSeries() {
+    public List<ChartSeries> getChartSeries() {
         return chartSeries;
     }
 
-    public void setChartSeries(List<Integer> chartSeries) {
+    public void setChartSeries(List<ChartSeries> chartSeries) {
         this.chartSeries = chartSeries;
     }
 

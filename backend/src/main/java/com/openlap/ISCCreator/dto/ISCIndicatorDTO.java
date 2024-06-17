@@ -1,5 +1,6 @@
 package com.openlap.ISCCreator.dto;
 
+import com.openlap.ISCCreator.model.ChartSeries;
 import com.openlap.ISCCreator.model.ISCIndicator;
 
 import java.util.ArrayList;
@@ -11,8 +12,8 @@ public class ISCIndicatorDTO {
     private String createdBy;
     private String chartName;
     private ChartOptionsDTO chartOptions;
-    private List<Integer> chartSeries;
-    private ChartTypeDTO chartTypeDTO;
+    private List<ChartSeriesDTO> chartSeries;
+    private ChartTypeDTO chartType;
     private IndicatorDataDTO indicatorData;
     private IndicatorGoalDTO indicatorGoal;
     private String indicatorGoalText;
@@ -47,20 +48,20 @@ public class ISCIndicatorDTO {
         this.chartOptions = chartOptionsDTO;
     }
 
-    public List<Integer> getChartSeries() {
+    public List<ChartSeriesDTO> getChartSeries() {
         return chartSeries;
     }
 
-    public void setChartSeries(List<Integer> chartSeries) {
-        this.chartSeries = chartSeries;
+    public void setChartSeries(List<ChartSeriesDTO> chartSeriesDTO) {
+        this.chartSeries = chartSeriesDTO;
     }
 
     public ChartTypeDTO getChartType() {
-        return chartTypeDTO;
+        return chartType;
     }
 
     public void setChartType(ChartTypeDTO chartTypeDTO) {
-        this.chartTypeDTO = chartTypeDTO;
+        this.chartType = chartTypeDTO;
     }
 
     public IndicatorDataDTO getIndicatorData() {
@@ -133,8 +134,8 @@ public ISCIndicator toISCIndicator() {
     iscIndicator.setCreatedBy(this.createdBy != null ? this.createdBy : "");
     iscIndicator.setChartName(this.chartName != null ? this.chartName : "");
     iscIndicator.setChartOptions(this.chartOptions != null ? this.chartOptions.toChartOptions() : null);
-    iscIndicator.setChartSeries(this.chartSeries != null ? this.chartSeries : new ArrayList<>());
-    iscIndicator.setChartType(this.chartTypeDTO != null ? this.chartTypeDTO.toChartType() : null);
+    iscIndicator.setChartSeries(this.chartSeries != null ? this.chartSeries.stream().map(ChartSeriesDTO::toChartSeries).collect(Collectors.toList()) : new ArrayList<>());
+    iscIndicator.setChartType(this.chartType != null ? this.chartType.toChartType() : null);
     iscIndicator.setIndicatorData(this.indicatorData != null ? this.indicatorData.toIndicatorData() : null);
     iscIndicator.setIndicatorGoal(this.indicatorGoal != null ? this.indicatorGoal.toIndicatorGoal() : null);
     iscIndicator.setIndicatorGoalText(this.indicatorGoalText != null ? this.indicatorGoalText : "");
