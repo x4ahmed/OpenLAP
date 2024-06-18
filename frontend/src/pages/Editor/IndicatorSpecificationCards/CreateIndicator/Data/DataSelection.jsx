@@ -103,6 +103,13 @@ export default function DataSelection({
     status: false,
     message: "",
   });
+  useEffect(() => {
+    if (apiRef.current) {
+      setTimeout(() => {
+        apiRef.current?.autosizeColumns({ expand: true });
+      });
+    }
+  }, [apiRef, dataState.columnData]);
   const [columnNameOriginal, setColumnNameOriginal] = useState("");
   const [numberOfRows, setNumberOfRows] = useState(0);
   const [openColumnTypeModal, setOpenColumnTypeModal] = useState(false);
