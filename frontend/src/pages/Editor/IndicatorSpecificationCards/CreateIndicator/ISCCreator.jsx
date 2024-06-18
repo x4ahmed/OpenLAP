@@ -29,7 +29,42 @@ import ISCCreatorHeader from "./ISCCreatorHeader";
 import ChartList from "./Visualization/components/ChartList";
 
 export default function ISCCreator() {
-  const [activeStep, setActiveStep] = useState(0);
+  const stepsInitial = [
+    "Fill the informations of the indicator",
+    "Choose the start method",
+    "Preview and Finalize",
+  ];
+  const stepsForCreatingDataSet = [
+    "Fill the informations of the indicator",
+    "Choose the start method",
+    "Method of generating the Dataset",
+    "Generate the Dataset ",
+    "Choose the visualization",
+    "Preview and Finalize",
+  ];
+  const stepsForVisualization = [
+    "Fill the informations of the indicator",
+    "Choose the start method",
+    "Choose the visualization",
+    "Method of generating the Dataset",
+    "Generate the Dataset",
+    "Preview and Finalize",
+  ];
+  // const [activeStep, setActiveStep] = useState(0);
+
+  // To make the stepper dynamic
+  const [steps, setSteps] = useState(
+    JSON.parse(sessionStorage.getItem("openlap-settings"))?.steps ||
+      stepsInitial
+  );
+  const [selectedMethod, setSelectedMethod] = useState(
+    JSON.parse(sessionStorage.getItem("openlap-settings"))?.selectedMethod ||
+      null
+  );
+
+  const [activeStep, setActiveStep] = useState(
+    JSON.parse(sessionStorage.getItem("openlap-settings"))?.activeStep || 0
+  );
   const [expandVisualization, setExpandVisualization] = useState(true);
   const [expandDataset, setExpandDataset] = useState(true);
   const [dataState, setDataState] = useState(
@@ -104,7 +139,7 @@ export default function ISCCreator() {
       return;
     }
     setUserCreatesIndicator((prevState) => !prevState);
-    setActiveStep(activeStep+1);
+    setActiveStep(activeStep + 1);
   };
 
   const resetChartSelected = () => {
@@ -354,6 +389,14 @@ export default function ISCCreator() {
       return tempDataState;
     });
   };
+  const handleMethodSelection = (method) => {
+    setSelectedMethod(method);
+    if (method === "visualization") {
+      setSteps(stepsForVisualization);
+    } else if (method === "dataset") {
+      setSteps(stepsForCreatingDataSet);
+    }
+  };
 
   return (
     <>
@@ -422,9 +465,13 @@ export default function ISCCreator() {
             toggleUserCreatesIndicator={toggleUserCreatesIndicator}
             activeStep={activeStep}
             setActiveStep={setActiveStep}
+            steps={steps}
+            stepsInitial={stepsInitial}
+            setSteps={setSteps}
           />
           {userCreatesIndicator && (
             <>
+              {/* The start of the first and last step */}
               <Slide direction="left" in={userCreatesIndicator}>
                 <Box>
                   {!userSelectsDataset &&
@@ -464,6 +511,8 @@ export default function ISCCreator() {
                               onClick={() => {
                                 setUserSelectsOnlyVisualization(true);
                                 toggleUserSelectsVisualization();
+                                handleMethodSelection("visualization");
+                                setActiveStep(activeStep + 1);
                               }}
                             >
                               <Typography variant="h6" align="center">
@@ -491,7 +540,11 @@ export default function ISCCreator() {
                                 alignItems: "center",
                                 cursor: "pointer",
                               }}
-                              onClick={() => toggleUserSelectsDataset()}
+                              onClick={() => {
+                                toggleUserSelectsDataset();
+                                handleMethodSelection("dataset");
+                                setActiveStep(activeStep + 1);
+                              }}
                             >
                               <Typography variant="h6" align="center">
                                 Select Data
@@ -501,7 +554,7 @@ export default function ISCCreator() {
                         </Grid>
                       </Grid>
                     )}
-
+                  {/* This is the last step when the user clicks on preview    */}
                   {userFinalizeSelection && (
                     <>
                       <Grid container justifyContent="center" sx={{ mt: 1 }}>
@@ -572,7 +625,9 @@ export default function ISCCreator() {
                       </Accordion>
                     </>
                   )}
+                  {/* The End of the last step */}
                 </Box>
+                {/* The END of the first and last step */}
               </Slide>
               <Slide direction="left" in={userSelectsDataset}>
                 <Box>
@@ -595,11 +650,21 @@ export default function ISCCreator() {
                           toggleUserSelectsVisualization
                         }
                         setDataState={setDataState}
+                        userSelectsOnlyVisualization={
+                          userSelectsOnlyVisualization
+                        }
+                        userFinalizeSelection={userFinalizeSelection}
+                        setUserFinalizeSelection={setUserFinalizeSelection}
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        stepsInitial={stepsInitial}
+                        setSteps={setSteps}
                       />
                     </>
                   )}
                 </Box>
               </Slide>
+
               <Slide direction="left" in={userSelectsVisualization}>
                 <Box>
                   {userSelectsVisualization && (
@@ -620,6 +685,8 @@ export default function ISCCreator() {
                             if (userSelectsOnlyVisualization) {
                               toggleUserSelectsVisualization();
                               setUserSelectsOnlyVisualization(false);
+                              setSteps(stepsInitial);
+                              setActiveStep(activeStep - 1);
                               return;
                             }
                             if (
@@ -627,11 +694,12 @@ export default function ISCCreator() {
                               userSelectsVisualization
                             ) {
                               toggleUserSelectsDataset();
+                              setActiveStep(activeStep - 1);
                             }
                             toggleUserSelectsVisualization();
                           }}
                         >
-                          Back
+                          Back1&&&&
                         </Button>
 
                         <Button
@@ -639,15 +707,27 @@ export default function ISCCreator() {
                           variant="contained"
                           disabled={chartSelected.code === ""}
                           onClick={() => {
-                            setUserFinalizeSelection(true);
-                            toggleUserSelectsVisualization();
-                            setDataState({
-                              ...dataState,
-                              status: true,
-                            });
+                            if (
+                              userSelectsOnlyVisualization &&
+                              !userSelectsDataset
+                            ) {
+                              toggleUserSelectsDataset();
+                              toggleUserSelectsVisualization();
+                              setUserFinalizeSelection(false);
+                              setActiveStep(activeStep + 1);
+                            }
+                            if (!userSelectsOnlyVisualization) {
+                              setUserFinalizeSelection(true);
+                              toggleUserSelectsVisualization();
+                              setDataState({
+                                ...dataState,
+                                status: true,
+                              });
+                              setActiveStep(activeStep + 1);
+                            }
                           }}
                         >
-                          Preview
+                          Next
                         </Button>
                       </Grid>
 
@@ -658,7 +738,7 @@ export default function ISCCreator() {
                         toggleEditPanel={toggleEditPanel}
                       />
 
-                      <Grid
+                      {/* <Grid
                         container
                         justifyContent="space-between"
                         sx={{ pb: 2 }}
@@ -699,7 +779,7 @@ export default function ISCCreator() {
                         >
                           Preview
                         </Button>
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   )}
                 </Box>

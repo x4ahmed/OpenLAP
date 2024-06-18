@@ -39,7 +39,10 @@ const ISCCreatorHeader = ({
   toggleUserCreatesIndicator,
   userCreatesIndicator,
   activeStep,
-  setActiveStep
+  setActiveStep,
+  steps,
+  stepsInitial,
+  setSteps
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -236,15 +239,13 @@ const ISCCreatorHeader = ({
     setIndicatorGoal(null);
     setDeleteDialog(false);
     toggleUserCreatesIndicator("reset");
+    setSteps(stepsInitial);
   };
-  const steps = ['Fill the informations of the indicator',
-    'Choose the start method',
-    '',
-    ''
-  ];
+  
 
   return (
     <>
+    {/* The implementation of the stepper */}
       <Box sx={{ width: '100%'}}>
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((label) => (
@@ -253,7 +254,7 @@ const ISCCreatorHeader = ({
             </Step>
           ))}
         </Stepper>
-      </Box>
+      </Box> 
       <Grid
         container
         justifyContent="space-between"
@@ -372,7 +373,11 @@ const ISCCreatorHeader = ({
                       }
                       variant="contained"
                       startIcon={<SaveIcon />}
-                      onClick={saveIndicator}
+                      onClick={ () => {
+                        saveIndicator()
+
+                      }
+                        }
                     >
                       Save
                     </Button>

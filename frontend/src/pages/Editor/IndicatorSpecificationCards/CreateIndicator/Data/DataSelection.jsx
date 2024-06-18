@@ -60,10 +60,18 @@ export default function DataSelection({
   handleAddNewRows,
   handleDeleteIndicatorData,
   setDataState,
+  setActiveStep,
   resetChartSelected,
   toggleEditPanel,
   toggleUserSelectsDataset,
   toggleUserSelectsVisualization,
+  userSelectsOnlyVisualization,
+  userFinalizeSelection,
+  setUserFinalizeSelection,
+  activeStep,
+  steps,
+  stepsInitial,
+  setSteps
 }) {
   const columnTypes = [
     {
@@ -85,7 +93,8 @@ export default function DataSelection({
     //     "An 'ordinal' categorical variable has a clear ordering. For example, temperature as a variable with three orderly categories (low, medium and high)",
     // },
   ];
-
+  
+  
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -157,6 +166,7 @@ export default function DataSelection({
       setOpenUploadCSVModal((prevState) => !prevState);
       return;
     }
+    setActiveStep(activeStep+1);
     setDataState({
       ...dataState,
       status: true,
@@ -453,10 +463,24 @@ export default function DataSelection({
             <Grid container justifyContent="space-between">
               <Button
                 variant="outlined"
-                onClick={() => toggleUserSelectsDataset()}
+                onClick={() => {
+                  if (userSelectsOnlyVisualization){
+                    toggleUserSelectsVisualization();
+                    toggleUserSelectsDataset();
+                    setActiveStep(activeStep - 1);
+                  }
+                  if (!userSelectsOnlyVisualization ){
+                    toggleUserSelectsDataset();
+                    setSteps(stepsInitial);
+                    setActiveStep(activeStep - 1);
+                    
+                  }
+                  
+                }
+                  }
                 startIcon={<KeyboardArrowLeftIcon />}
               >
-                Back
+                Back2222
               </Button>
             </Grid>
           )}
@@ -548,19 +572,32 @@ export default function DataSelection({
                   // TODO: Confirmation needed
                   // handleUnpopulateData();
                   backToDataSelection();
+                  setActiveStep(activeStep-1);
                 }}
               >
-                Back
+                Back1
               </Button>
               <Button
                 variant="contained"
                 endIcon={<KeyboardArrowRightIcon />}
                 onClick={() => {
-                  toggleUserSelectsDataset();
-                  toggleUserSelectsVisualization();
+                  if (userSelectsOnlyVisualization) {
+                    setUserFinalizeSelection(true);
+                    toggleUserSelectsDataset();
+                    setDataState({
+                      ...dataState,
+                      status: true,
+                    });
+                    setActiveStep(activeStep +1);
+                  }
+                  if (!userSelectsOnlyVisualization) {
+                    toggleUserSelectsDataset();
+                    toggleUserSelectsVisualization();
+                    setActiveStep(activeStep +1);
+                  }
                 }}
               >
-                Visualization
+                Next
               </Button>
             </Grid>
           )}
