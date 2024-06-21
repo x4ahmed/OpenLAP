@@ -41,6 +41,7 @@ import {
   MoreVert as MoreVertIcon,
   InsertDriveFile as InsertDriveFileIcon,
 } from "@mui/icons-material";
+import Checkbox from "@mui/material/Checkbox";
 import { useDispatch } from "react-redux";
 import Chart from "react-apexcharts";
 import { setSidebarMenu } from "../../../utils/redux/reducers/reducer";
@@ -48,6 +49,8 @@ import { getLastUpdateDate } from "../../../utils/utils";
 import { useNavigate } from "react-router-dom";
 import defaultISCData from "../../../utils/data/defaultISCData";
 import { v4 as uuidv4 } from "uuid";
+import PropTypes from "prop-types";
+import { red } from "@mui/material/colors";
 
 const ISCDashboard = () => {
   const dispatch = useDispatch();
@@ -60,12 +63,7 @@ const ISCDashboard = () => {
     status: false,
     indicatorData: null,
   });
-  const [toBeDeleted, setToBeDeleted] = useState({
-    id: "",
-    indicatorName: "",
-    chartType: "",
-    lastUpdated: "",
-  });
+  const [toBeDeleted, setToBeDeleted] = useState([]);
   const [parsedISCData, setParsedISCData] = useState(
     JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || []
   );
@@ -90,7 +88,7 @@ const ISCDashboard = () => {
 
   const [file, setFile] = useState({ name: "" });
   const [anchorEl, setAnchorEl] = useState(null);
-  const [tempIndicatorSelected, setTempIndicatorSelected] = useState({});
+  const [tempIndicatorSelected, setTempIndicatorSelected] = useState([]);
   const open = Boolean(anchorEl);
 
   const [anchorEl2, setAnchorEl2] = useState(null);
@@ -267,13 +265,14 @@ const ISCDashboard = () => {
 
   const deleteISC = () => {
     setDeleteDialog((prevState) => !prevState);
-    let filteredISC = parsedISCData.filter(
-      (parsedISC) => parsedISC.id !== toBeDeleted.id
+    const filteredISC = parsedISCData.filter(
+      (parsedISC) => !selected.includes(parsedISC.id)
     );
     filteredISC.sort(
       (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
     );
     setParsedISCData(filteredISC);
+    setSelected([]);
     handleClose();
     localStorage.setItem("openlap-isc-dashboard", JSON.stringify(filteredISC));
   };
@@ -311,6 +310,215 @@ const ISCDashboard = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  function EnhancedTableHead(props) {
+    const {
+      onSelectAllClick,
+      numSelected,
+      rowCount,
+    } = props;
+
+    return (
+      <TableHead>
+        <TableRow>
+          <TableCell>
+            <Box display="flex" alignItems="center">
+              <Checkbox
+                color="primary"
+                indeterminate={numSelected > 0 && numSelected < rowCount}
+                checked={rowCount > 0 && numSelected === rowCount}
+                onChange={onSelectAllClick}
+                inputProps={{
+                  "aria-label": "select all Indicators",
+                }}
+              />
+              <Typography variant="overline" sx={{ fontWeight: "bold", ml: 1 }}>
+                Indicators
+              </Typography>
+            </Box>
+          </TableCell>
+          <TableCell align="right" padding="none">
+            <Typography variant="overline" sx={{ fontWeight: "bold" }}>
+              Charts
+            </Typography>
+          </TableCell>
+          <TableCell align="center"></TableCell>
+        </TableRow>
+      </TableHead>
+    );
+  }
+
+  EnhancedTableHead.propTypes = {
+    numSelected: PropTypes.number.isRequired,
+    onSelectAllClick: PropTypes.func.isRequired,
+    rowCount: PropTypes.number.isRequired,
+  };
+
+  function EnhancedTableToolbar(props) {
+    const { numSelected } = props;
+
+    return (
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={1}
+      >
+        <Grid item sm>
+          <Box display="flex" alignItems="center">
+            <Tooltip
+              arrow
+              title={
+                <Typography variant="body2" sx={{ p: 1 }}>
+                  Create a new indicator
+                </Typography>
+              }
+            >
+              <Button
+                disableElevation
+                color="primary"
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => handleCreateIndicator(false)}
+              >
+                New
+              </Button>
+            </Tooltip>
+            {numSelected > 0 && (
+              <Typography
+                sx={{ ml: 2 }}
+                color="inherit"
+                variant="subtitle1"
+                component="div"
+              >
+                {numSelected} selected
+              </Typography>
+            )}
+          </Box>
+        </Grid>
+
+        <Grid item xs>
+          {/* // TODO: Add the search and filter options */}
+          <Grid container alignItems="center">
+            <Grid item xs sx={{ pr: 1 }}>
+              <TextField
+                disabled
+                fullWidth
+                size="small"
+                placeholder="Search for indicators..."
+              />
+            </Grid>
+            <Grid item>
+              {numSelected > 0 ? (
+                <Tooltip title="Delete">
+                  <IconButton
+                    onClick={() => {
+                      setDeleteDialog(true);
+                      setToBeDeleted(tempIndicatorSelected);
+                    }}
+                  >
+                    <DeleteIcon sx={{ color: red[500] }} />
+                  </IconButton>
+                </Tooltip>
+              ) : null}
+            </Grid>
+            <Grid item>
+              <IconButton color="primary" disabled>
+                <FilterListIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton onClick={handleClick2} color="primary">
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl2}
+                open={open2}
+                onClose={handleClose2}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+
+                  horizontal: "right",
+                }}
+              >
+                <MenuItem onClick={() => setOpenUploadJSONModal(true)}>
+                  <ListItemIcon>
+                    <UploadIcon fontSize="small" color="primary" />
+                  </ListItemIcon>
+                  <ListItemText>Import Indicators</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleDownloadFile}>
+                  <ListItemIcon>
+                    <GetAppIcon fontSize="small" color="primary" />
+                  </ListItemIcon>
+                  <ListItemText>Export Indicator</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  EnhancedTableToolbar.propTypes = {
+    numSelected: PropTypes.number.isRequired,
+  };
+
+  const [selected, setSelected] = useState([]);
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    setRows(parsedISCData);
+  }, [parsedISCData]);
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelected = rows.map((n) => n.id);
+      const newTempIndicatorSelected = rows.reduce((acc, curr) => {
+        acc[curr.id] = curr;
+        return acc;
+      }, {});
+      setSelected(newSelected);
+      setTempIndicatorSelected(newTempIndicatorSelected);
+      return;
+    }
+    setSelected([]);
+    setTempIndicatorSelected([]);
+  };
+
+
+  const handleRowClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+    let newTempIndicatorSelected = { ...tempIndicatorSelected };
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+      newTempIndicatorSelected[id] = rows.find((row) => row.id === id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+      delete newTempIndicatorSelected[id];
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+      delete newTempIndicatorSelected[id];
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+      delete newTempIndicatorSelected[id];
+    }
+
+    setSelected(newSelected);
+    setTempIndicatorSelected(newTempIndicatorSelected);
+  };
+
+  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
     <>
@@ -370,83 +578,7 @@ const ISCDashboard = () => {
         }}
       >
         <Grid item xs={12}>
-          <Grid
-            container
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={1}
-          >
-            <Grid item sm>
-              <Tooltip
-                arrow
-                title={
-                  <Typography variant="body2" sx={{ p: 1 }}>
-                    Create a new indicator
-                  </Typography>
-                }
-              >
-                <Button
-                  disableElevation
-                  color="primary"
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => handleCreateIndicator(false)}
-                >
-                  New
-                </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item xs>
-              {/* // TODO: Add the search and filter options */}
-              <Grid container alignItems="center">
-                <Grid item xs sx={{ pr: 1 }}>
-                  <TextField
-                    disabled
-                    fullWidth
-                    size="small"
-                    placeholder="Search for indicators..."
-                  />
-                </Grid>
-                <Grid item>
-                  <IconButton color="primary" disabled>
-                    <FilterListIcon />
-                  </IconButton>
-                </Grid>
-                <Grid item>
-                  <IconButton onClick={handleClick2} color="primary">
-                    <MoreVertIcon />
-                  </IconButton>
-                  <Menu
-                    anchorEl={anchorEl2}
-                    open={open2}
-                    onClose={handleClose2}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-
-                      horizontal: "right",
-                    }}
-                  >
-                    <MenuItem onClick={() => setOpenUploadJSONModal(true)}>
-                      <ListItemIcon>
-                        <UploadIcon fontSize="small" color="primary" />
-                      </ListItemIcon>
-                      <ListItemText>Import Indicators</ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={handleDownloadFile}>
-                      <ListItemIcon>
-                        <GetAppIcon fontSize="small" color="primary" />
-                      </ListItemIcon>
-                      <ListItemText>Export Indicator</ListItemText>
-                    </MenuItem>
-                  </Menu>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
+          <EnhancedTableToolbar numSelected={selected.length} />
         </Grid>
         <Grid item xs={12}>
           <TableContainer
@@ -458,95 +590,101 @@ const ISCDashboard = () => {
             }}
           >
             <Table stickyHeader size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <Typography variant="overline" sx={{ fontWeight: "bold" }}>
-                      Indicators
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right" padding="none">
-                    <Typography variant="overline" sx={{ fontWeight: "bold" }}>
-                      Charts
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center"></TableCell>
-                </TableRow>
-              </TableHead>
+              <EnhancedTableHead
+                numSelected={selected.length}
+                onSelectAllClick={handleSelectAllClick}
+                rowCount={rows.length}
+              />
               <TableBody>
                 {parsedISCData
                   .sort(
                     (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
                   )
-                  .map((row, index) => (
-                    <TableRow
-                      hover
-                      key={index}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell component="th" scope="row" sx={{ py: 1.5 }}>
-                        <Typography variant="body1" gutterBottom>
-                          {row.indicatorName}
-                        </Typography>
-
-                        <Typography variant="body2">
-                          <i>
-                            Last updated: {getLastUpdateDate(row.lastUpdated)}
-                          </i>
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right" padding="none">
-                        <Typography variant="body2" gutterBottom>
-                          {row.chartName}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Grid
-                          container
-                          justifyContent="flex-end"
-                          spacing={1}
-                          sx={{ width: "100px" }}
-                        >
-                          <Grid item>
-                            <Tooltip
-                              arrow
-                              title={
-                                <Typography variant="body2" sx={{ p: 1 }}>
-                                  Preview
-                                </Typography>
-                              }
-                            >
-                              <IconButton
-                                color="primary"
-                                onClick={() => handlePreviewIndicator(row)}
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    return (
+                      <TableRow
+                        hover
+                        key={index}
+                        selected={isItemSelected}
+                        aria-checked={isItemSelected}
+                        onClick={(event) => handleRowClick(event, row.id)}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row" sx={{ py: 1.5 }}>
+                          <Box display="flex" alignItems="center">
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                "aria-labelledby": `enhanced-table-checkbox-${index}`,
+                              }}
+                            />
+                            <Box display="flex" flexDirection="column">
+                              <Typography variant="body1" gutterBottom>
+                                {row.indicatorName}
+                              </Typography>
+                              <Typography variant="body2">
+                                <i>
+                                  Last updated:{" "}
+                                  {getLastUpdateDate(row.lastUpdated)}
+                                </i>
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right" padding="none">
+                          <Typography variant="body2" gutterBottom>
+                            {row.chartName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Grid
+                            container
+                            justifyContent="flex-end"
+                            spacing={1}
+                            sx={{ width: "100px" }}
+                          >
+                            <Grid item>
+                              <Tooltip
+                                arrow
+                                title={
+                                  <Typography variant="body2" sx={{ p: 1 }}>
+                                    Preview
+                                  </Typography>
+                                }
                               >
-                                <VisibilityIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </Grid>
-
-                          <Grid item>
-                            <Tooltip
-                              arrow
-                              title={
-                                <Typography variant="body2" sx={{ p: 1 }}>
-                                  More options
-                                </Typography>
-                              }
-                            >
-                              <IconButton
-                                onClick={(event) => handleClick(event, row)}
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => handlePreviewIndicator(row)}
+                                >
+                                  <VisibilityIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
+                            <Grid item>
+                              <Tooltip
+                                arrow
+                                title={
+                                  <Typography variant="body2" sx={{ p: 1 }}>
+                                    More options
+                                  </Typography>
+                                }
                               >
-                                <MoreVertIcon color="primary" />
-                              </IconButton>
-                            </Tooltip>
+                                <IconButton
+                                  onClick={(event) => handleClick(event, row)}
+                                >
+                                  <MoreVertIcon color="primary" />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
