@@ -286,14 +286,19 @@ const ISCDashboard = () => {
     const reader = new FileReader();
     reader.onload = async ({ target }) => {
       try {
-        const json = JSON.parse(target.result);
-        setFile(json);
-        // console.log(json);
-        json.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-        setParsedISCData(json);
-        localStorage.setItem("openlap-isc-dashboard", JSON.stringify(json));
+        const newJson = JSON.parse(target.result);
+        const existingData =
+          JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || [];
+        const mergedData = [...existingData, ...newJson];
+        mergedData.sort(
+          (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+        );
+        setParsedISCData(mergedData);
+        localStorage.setItem(
+          "openlap-isc-dashboard",
+          JSON.stringify(mergedData)
+        );
         setOpenUploadJSONModal(false);
-        handleClose2();
       } catch {
         console.log("Invalid JSON file");
       }
