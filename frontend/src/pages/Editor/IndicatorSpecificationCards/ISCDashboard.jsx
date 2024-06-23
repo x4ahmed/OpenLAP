@@ -327,12 +327,6 @@ const ISCDashboard = () => {
     document.body.removeChild(link);
   };
 
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const handleSearchFocus = () => {
-    setIsSearchFocused(true);
-  };
-  
-
   function EnhancedTableHead(props) {
     const { onSelectAllClick, numSelected, rowCount } = props;
 
@@ -437,8 +431,7 @@ const ISCDashboard = () => {
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                 }}
-                onFocus={handleSearchFocus}
-                autoFocus={isSearchFocused}
+                autoFocus
               />
             </Grid>
 
