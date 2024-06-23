@@ -294,14 +294,29 @@ const ISCDashboard = () => {
     const reader = new FileReader();
     reader.onload = async ({ target }) => {
       try {
-        const json = JSON.parse(target.result);
-        setFile(json);
-        // console.log(json);
-        json.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-        setParsedISCData(json);
-        localStorage.setItem("openlap-isc-dashboard", JSON.stringify(json));
+        const newJson = JSON.parse(target.result);
+
+        // Retrieve existing data from local storage
+        const existingData =
+          JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || [];
+
+        // Merge the new data with the existing data
+        const mergedData = [...existingData, ...newJson];
+
+        // Sort the merged data
+        mergedData.sort(
+          (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+        );
+
+        // Update the state and local storage with the merged data
+        setParsedISCData(mergedData);
+        localStorage.setItem(
+          "openlap-isc-dashboard",
+          JSON.stringify(mergedData)
+        );
+
         setOpenUploadJSONModal(false);
-        handleClose2();
+        // handleClose2();
       } catch {
         console.log("Invalid JSON file");
       }
@@ -744,7 +759,11 @@ const ISCDashboard = () => {
             }}
           >
             <MenuItem
-              onClick={() => handleEditIndicator(tempIndicatorSelected)}
+              onClick={() =>
+                handleEditIndicator(
+                  tempIndicatorSelected[Object.keys(tempIndicatorSelected)[0]]
+                )
+              }
             >
               <ListItemIcon>
                 <EditIcon fontSize="small" color="primary" />
