@@ -1,7 +1,4 @@
 package com.openlap.ISCCreator.controller;
-
-import com.openlap.AnalyticsEngine.dto.Request.IndicatorSaveRequest;
-import com.openlap.AnalyticsEngine.dto.Response.IndicatorSaveResponse;
 import com.openlap.ISCCreator.dto.ISCIndicatorDTO;
 import com.openlap.ISCCreator.service.ISCIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
