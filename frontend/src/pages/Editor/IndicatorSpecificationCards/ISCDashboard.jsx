@@ -67,6 +67,8 @@ const ISCDashboard = () => {
   const [parsedISCData, setParsedISCData] = useState(
     JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || []
   );
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const defaultPreviewIndicator = {
     indicatorGoal: "",
     indicatorQuestion: "",
@@ -108,7 +110,6 @@ const ISCDashboard = () => {
   // const handleClose2 = () => {
   //   setAnchorEl2(null);
   // };
-
 
   useEffect(() => {
     let ISCDashboard = JSON.parse(
@@ -311,6 +312,17 @@ const ISCDashboard = () => {
     link.click();
     document.body.removeChild(link);
   };
+  
+  const handleSeacrhIndicator = (query, data) => {
+    if (!query) {
+      return data;
+    } else {
+      return data.filter((d) =>
+        d.indicatorName.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+  };
+  const dataFiltered = handleSeacrhIndicator(searchQuery, parsedISCData);
 
   function EnhancedTableHead(props) {
     const { onSelectAllClick, numSelected, rowCount } = props;
@@ -412,6 +424,13 @@ const ISCDashboard = () => {
                 fullWidth
                 size="small"
                 placeholder="Search for indicators..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
+                onFocus={() => setIsSearchFocused(true)}
+                autoFocus={isSearchFocused}
+                onBlur={() => setIsSearchFocused(false)}
               />
             </Grid>
 
@@ -602,7 +621,7 @@ const ISCDashboard = () => {
                 rowCount={rows.length}
               />
               <TableBody>
-                {parsedISCData
+                {dataFiltered
                   .sort(
                     (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
                   )
