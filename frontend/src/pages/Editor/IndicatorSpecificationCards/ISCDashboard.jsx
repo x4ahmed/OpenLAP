@@ -309,14 +309,11 @@ const ISCDashboard = () => {
     reader.readAsText(file);
   };
 
-  const handleDownloadFile = (downloadAll = false) => {
+  const handleDownloadFile = () => {
     const parsedData = JSON.parse(
       localStorage.getItem("openlap-isc-dashboard")
     );
-    const filteredISC = downloadAll
-      ? parsedData
-      : parsedData.filter((parsedISC) => selected.includes(parsedISC.id));
-    const fileData = JSON.stringify(filteredISC);
+    const fileData = JSON.stringify(parsedData);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -428,34 +425,21 @@ const ISCDashboard = () => {
                 size="small"
                 placeholder="Search for indicators..."
                 value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                }}
-                autoFocus
               />
             </Grid>
 
             <Grid item>
               {numSelected > 0 ? (
-                <>
-                  <Tooltip title="Delete">
-                    <IconButton
-                      onClick={() => {
-                        setDeleteDialog(true);
-                        setToBeDeleted(tempIndicatorSelected);
-                      }}
-                    >
-                      <DeleteIcon sx={{ color: red[500] }} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Export Indicator">
-                    <IconButton onClick={() => handleDownloadFile(false)}>
-                      <IconButton>
-                        <GetAppIcon fontSize="small" color="primary" />
-                      </IconButton>
-                    </IconButton>
-                  </Tooltip>
-                </>
+                <Tooltip title="Delete">
+                  <IconButton
+                    onClick={() => {
+                      setDeleteDialog(true);
+                      setToBeDeleted(tempIndicatorSelected);
+                    }}
+                  >
+                    <DeleteIcon sx={{ color: red[500] }} />
+                  </IconButton>
+                </Tooltip>
               ) : null}
             </Grid>
             <Grid item>
@@ -487,11 +471,11 @@ const ISCDashboard = () => {
                   </ListItemIcon>
                   <ListItemText>Import Indicators</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={() => handleDownloadFile(true)}>
+                <MenuItem onClick={handleDownloadFile}>
                   <ListItemIcon>
                     <GetAppIcon fontSize="small" color="primary" />
                   </ListItemIcon>
-                  <ListItemText>Export All Indicators</ListItemText>
+                  <ListItemText>Export Indicator</ListItemText>
                 </MenuItem>
               </Menu>
             </Grid>
