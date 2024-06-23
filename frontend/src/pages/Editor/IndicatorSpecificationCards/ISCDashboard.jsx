@@ -91,8 +91,8 @@ const ISCDashboard = () => {
   const [tempIndicatorSelected, setTempIndicatorSelected] = useState([]);
   const open = Boolean(anchorEl);
 
-  const [anchorEl2, setAnchorEl2] = useState(null);
-  const open2 = Boolean(anchorEl2);
+  // const [anchorEl2, setAnchorEl2] = useState(null);
+  // const open2 = Boolean(anchorEl2);
 
   const handleClick = (event, indicator) => {
     setAnchorEl(event.currentTarget);
@@ -102,12 +102,13 @@ const ISCDashboard = () => {
     setAnchorEl(null);
     setTempIndicatorSelected({});
   };
-  const handleClick2 = (event, indicator) => {
-    setAnchorEl2(event.currentTarget);
-  };
-  const handleClose2 = () => {
-    setAnchorEl2(null);
-  };
+  // const handleClick2 = (event, indicator) => {
+  //   setAnchorEl2(event.currentTarget);
+  // };
+  // const handleClose2 = () => {
+  //   setAnchorEl2(null);
+  // };
+
 
   useEffect(() => {
     let ISCDashboard = JSON.parse(
@@ -312,11 +313,7 @@ const ISCDashboard = () => {
   };
 
   function EnhancedTableHead(props) {
-    const {
-      onSelectAllClick,
-      numSelected,
-      rowCount,
-    } = props;
+    const { onSelectAllClick, numSelected, rowCount } = props;
 
     return (
       <TableHead>
@@ -356,6 +353,16 @@ const ISCDashboard = () => {
 
   function EnhancedTableToolbar(props) {
     const { numSelected } = props;
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
 
     return (
       <Grid
@@ -402,12 +409,12 @@ const ISCDashboard = () => {
           <Grid container alignItems="center">
             <Grid item xs sx={{ pr: 1 }}>
               <TextField
-                disabled
                 fullWidth
                 size="small"
                 placeholder="Search for indicators..."
               />
             </Grid>
+
             <Grid item>
               {numSelected > 0 ? (
                 <Tooltip title="Delete">
@@ -428,13 +435,13 @@ const ISCDashboard = () => {
               </IconButton>
             </Grid>
             <Grid item>
-              <IconButton onClick={handleClick2} color="primary">
+              <IconButton onClick={handleClick} color="primary">
                 <MoreVertIcon />
               </IconButton>
               <Menu
-                anchorEl={anchorEl2}
-                open={open2}
-                onClose={handleClose2}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
                 anchorOrigin={{
                   vertical: "bottom",
                   horizontal: "right",
@@ -490,7 +497,6 @@ const ISCDashboard = () => {
     setSelected([]);
     setTempIndicatorSelected([]);
   };
-
 
   const handleRowClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
