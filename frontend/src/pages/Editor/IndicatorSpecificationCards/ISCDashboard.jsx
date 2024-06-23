@@ -90,7 +90,9 @@ const ISCDashboard = () => {
 
   const [file, setFile] = useState({ name: "" });
   const [anchorEl, setAnchorEl] = useState(null);
-  const [tempIndicatorSelected, setTempIndicatorSelected] = useState([]);
+  const [tempIndicatorSelected, setTempIndicatorSelected] = useState({});
+  const [batchIndicatorSelected, setBatchIndicatorSelected] = useState([]);
+  const [deleteSelected, setDeleteSelected] = useState(false);
   const open = Boolean(anchorEl);
 
   // const [anchorEl2, setAnchorEl2] = useState(null);
@@ -267,9 +269,10 @@ const ISCDashboard = () => {
 
   const deleteISC = () => {
     setDeleteDialog((prevState) => !prevState);
-    const filteredISC = parsedISCData.filter(
-      (parsedISC) => !selected.includes(parsedISC.id)
-    );
+    const filteredISC = deleteSelected
+      ? parsedISCData.filter((parsedISC) => !selected.includes(parsedISC.id))
+      : parsedISCData.filter((parsedISC) => parsedISC.id !== toBeDeleted.id);
+      
     filteredISC.sort(
       (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
     );
@@ -444,7 +447,7 @@ const ISCDashboard = () => {
                     <IconButton
                       onClick={() => {
                         setDeleteDialog(true);
-                        setToBeDeleted(tempIndicatorSelected);
+                        setDeleteSelected(true)
                       }}
                     >
                       <DeleteIcon sx={{ color: red[500] }} />
@@ -515,42 +518,42 @@ const ISCDashboard = () => {
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelected = rows.map((n) => n.id);
-      const newTempIndicatorSelected = rows.reduce((acc, curr) => {
+      const newBatchIndicatorSelected = rows.reduce((acc, curr) => {
         acc[curr.id] = curr;
         return acc;
       }, {});
       setSelected(newSelected);
-      setTempIndicatorSelected(newTempIndicatorSelected);
+      setBatchIndicatorSelected(newBatchIndicatorSelected);
       return;
     }
     setSelected([]);
-    setTempIndicatorSelected([]);
+    setBatchIndicatorSelected([]);
   };
 
   const handleRowClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
-    let newTempIndicatorSelected = { ...tempIndicatorSelected };
+    let newBatchIndicatorSelected = { ...batchIndicatorSelected };
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
-      newTempIndicatorSelected[id] = rows.find((row) => row.id === id);
+      newBatchIndicatorSelected[id] = rows.find((row) => row.id === id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
-      delete newTempIndicatorSelected[id];
+      delete newBatchIndicatorSelected[id];
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
-      delete newTempIndicatorSelected[id];
+      delete newBatchIndicatorSelected[id];
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
         selected.slice(selectedIndex + 1)
       );
-      delete newTempIndicatorSelected[id];
+      delete newBatchIndicatorSelected[id];
     }
 
     setSelected(newSelected);
-    setTempIndicatorSelected(newTempIndicatorSelected);
+    setBatchIndicatorSelected(newBatchIndicatorSelected);
   };
 
   const isSelected = (id) => selected.indexOf(id) !== -1;
@@ -748,6 +751,7 @@ const ISCDashboard = () => {
             <MenuItem
               onClick={() => {
                 setDeleteDialog(true);
+                setDeleteSelected(false)
                 setToBeDeleted(tempIndicatorSelected);
               }}
             >
