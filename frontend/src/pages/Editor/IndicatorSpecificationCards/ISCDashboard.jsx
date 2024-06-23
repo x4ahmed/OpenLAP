@@ -109,7 +109,6 @@ const ISCDashboard = () => {
   //   setAnchorEl2(null);
   // };
 
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     let ISCDashboard = JSON.parse(
@@ -160,17 +159,6 @@ const ISCDashboard = () => {
     dispatch(setSidebarMenu("/isc/creator"));
     navigate("/isc/creator");
   };
-
-  const handleSeacrhIndicator = (query, data) => {
-    if (!query) {
-      return data;
-    } else {
-      return data.filter((d) =>
-        d.indicatorName.toLowerCase().includes(query.toLowerCase())
-      );
-    }
-  };
-  const dataFiltered = handleSeacrhIndicator(searchQuery, parsedISCData);
 
   const handleEditIndicator = (params, forceEdit = false) => {
     // let tempParams = params.row;
@@ -424,7 +412,6 @@ const ISCDashboard = () => {
                 fullWidth
                 size="small"
                 placeholder="Search for indicators..."
-                value={searchQuery}
               />
             </Grid>
 
@@ -615,7 +602,7 @@ const ISCDashboard = () => {
                 rowCount={rows.length}
               />
               <TableBody>
-                {dataFiltered
+                {parsedISCData
                   .sort(
                     (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
                   )
