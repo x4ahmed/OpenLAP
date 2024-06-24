@@ -1,11 +1,15 @@
 package com.openlap.ISCCreator.service;
 
+import com.openlap.AnalyticsEngine.model.OpenLapUser;
 import com.openlap.ISCCreator.dto.ISCIndicatorDTO;
 import com.openlap.ISCCreator.model.ISCIndicator;
 import com.openlap.ISCCreator.repo.ISCIndicatorRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -15,11 +19,17 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     @Autowired
     private ISCIndicatorRepo iscIndicatorRepo;
 
+    EntityManagerFactory factory = Persistence.createEntityManagerFactory("OpenLAP");
+    EntityManager em = factory.createEntityManager();
+
+
+
     @Override
     public boolean saveISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request) {
         try {
-            iscIndicatorDTO.setCreatedBy(request.getUserPrincipal().getName());
-            iscIndicatorRepo.save(iscIndicatorDTO.toISCIndicator());
+            OpenLapUser openlapUser = em.find(OpenLapUser.class, request.getUserPrincipal().getName());
+            ISCIndicator iscIndicator = new ISCIndicator(iscIndicatorDTO.getIscJsonString(), openlapUser);
+            iscIndicatorRepo.save(iscIndicator);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,7 +52,6 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     @Override
     public boolean updateISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request) {
         try {
-            iscIndicatorRepo.save(iscIndicatorDTO.toISCIndicator());
             return true;
         }
         catch (Exception e) {

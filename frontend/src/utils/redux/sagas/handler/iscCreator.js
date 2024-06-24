@@ -5,7 +5,7 @@ export function* handleSaveISCIndicator(action) {
   let iscData = action.iscData;
   try {
     console.log('iscData',iscData);
-    const response = yield call(requestSaveISCIndicator, iscData);
+    const response = yield call(requestSaveISCIndicator, JSON.stringify(iscData));
     yield put(editISC(response.data));
   } catch (error) {
     console.log(error);
