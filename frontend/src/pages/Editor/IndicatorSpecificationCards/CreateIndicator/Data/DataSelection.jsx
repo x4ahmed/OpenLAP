@@ -1077,6 +1077,7 @@ export default function DataSelection({
                     How many rows would you like to add in the table?
                   </Typography>
                   <TextField
+                    placeholder="Please enter a number above 0!"
                     autoFocus={columnName !== ""}
                     defaultValue={rowData.length ? rowData.length : ""}
                     fullWidth
@@ -1301,6 +1302,7 @@ export default function DataSelection({
               How many rows would you like to add in the table?
             </Typography>
             <TextField
+              placeholder="Please enter a number above 0!"
               min="1"
               autoFocus
               fullWidth
