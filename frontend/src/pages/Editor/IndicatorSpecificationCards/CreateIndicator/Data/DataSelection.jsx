@@ -71,7 +71,7 @@ export default function DataSelection({
   activeStep,
   steps,
   stepsInitial,
-  setSteps
+  setSteps,
 }) {
   const columnTypes = [
     {
@@ -93,8 +93,7 @@ export default function DataSelection({
     //     "An 'ordinal' categorical variable has a clear ordering. For example, temperature as a variable with three orderly categories (low, medium and high)",
     // },
   ];
-  
-  
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -166,7 +165,7 @@ export default function DataSelection({
       setOpenUploadCSVModal((prevState) => !prevState);
       return;
     }
-    setActiveStep(activeStep+1);
+    setActiveStep(activeStep + 1);
     setDataState({
       ...dataState,
       status: true,
@@ -455,6 +454,43 @@ export default function DataSelection({
     setCellModesModel(newModel);
   }, []);
 
+  //These two functions are for the back buttons in creating dataset
+  const handleBack1ButtonClick = () => {
+    // TODO: Confirmation needed
+    // handleUnpopulateData();
+    backToDataSelection();
+    setActiveStep(activeStep - 1);
+  };
+  const handleBack2ButtonClick = () => {
+    if (userSelectsOnlyVisualization) {
+      toggleUserSelectsVisualization();
+      toggleUserSelectsDataset();
+      setActiveStep(activeStep - 1);
+    }
+    if (!userSelectsOnlyVisualization) {
+      toggleUserSelectsDataset();
+      setSteps(stepsInitial);
+      setActiveStep(activeStep - 1);
+    }
+  };
+  const handleBackfromDataSelection = (index) => {
+    return () => {
+      if (activeStep > index && index === 2 && userSelectsOnlyVisualization) {
+        handleBack2ButtonClick();
+      } else if (
+        activeStep > index && index === 1 && !userSelectsOnlyVisualization
+      ) {
+        handleBack2ButtonClick();
+      } else if (activeStep > index && index === 3 && userSelectsOnlyVisualization) {
+        handleBack1ButtonClick();
+      } else if (
+        activeStep > index && index === 2 && !userSelectsOnlyVisualization
+      ) {
+        handleBack1ButtonClick();
+      }
+    };
+  };
+
   return (
     <>
       {!dataState.status && (
@@ -463,21 +499,7 @@ export default function DataSelection({
             <Grid container justifyContent="space-between">
               <Button
                 variant="outlined"
-                onClick={() => {
-                  if (userSelectsOnlyVisualization){
-                    toggleUserSelectsVisualization();
-                    toggleUserSelectsDataset();
-                    setActiveStep(activeStep - 1);
-                  }
-                  if (!userSelectsOnlyVisualization ){
-                    toggleUserSelectsDataset();
-                    setSteps(stepsInitial);
-                    setActiveStep(activeStep - 1);
-                    
-                  }
-                  
-                }
-                  }
+                onClick={handleBack2ButtonClick}
                 startIcon={<KeyboardArrowLeftIcon />}
               >
                 Back2222
@@ -568,12 +590,7 @@ export default function DataSelection({
               <Button
                 variant="outlined"
                 startIcon={<KeyboardArrowLeftIcon />}
-                onClick={() => {
-                  // TODO: Confirmation needed
-                  // handleUnpopulateData();
-                  backToDataSelection();
-                  setActiveStep(activeStep-1);
-                }}
+                onClick={handleBack1ButtonClick}
               >
                 Back1
               </Button>
@@ -588,12 +605,12 @@ export default function DataSelection({
                       ...dataState,
                       status: true,
                     });
-                    setActiveStep(activeStep +1);
+                    setActiveStep(activeStep + 1);
                   }
                   if (!userSelectsOnlyVisualization) {
                     toggleUserSelectsDataset();
                     toggleUserSelectsVisualization();
-                    setActiveStep(activeStep +1);
+                    setActiveStep(activeStep + 1);
                   }
                 }}
               >

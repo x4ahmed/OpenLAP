@@ -12,9 +12,10 @@ import {
   TextField,
   Tooltip,
   Typography,
-  Stepper, 
+  Stepper,
   Step,
-  StepLabel
+  StepLabel,
+  StepButton,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -42,12 +43,13 @@ const ISCCreatorHeader = ({
   setActiveStep,
   steps,
   stepsInitial,
-  setSteps
+  setSteps,
+  handleBack,
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  
+
   function sortGoalList(goalList) {
     return goalList.sort((a, b) => {
       const nameA = a.name.toUpperCase(); // ignore case
@@ -241,20 +243,49 @@ const ISCCreatorHeader = ({
     toggleUserCreatesIndicator("reset");
     setSteps(stepsInitial);
   };
-  
 
   return (
     <>
-    {/* The implementation of the stepper */}
-      <Box sx={{ width: '100%'}}>
-        <Stepper activeStep={activeStep} alternativeLabel>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
+      {/* The implementation of the stepper */}
+      <Box sx={{ width: "100%" }}>
+        <Stepper nonLinear activeStep={activeStep} alternativeLabel>
+          {steps.map((step, index) => {
+            const isDisabled = activeStep < index;
+
+            return (
+              <Step key={index}>
+                <Tooltip
+                  title={
+                    isDisabled ? (
+                      <span style={{ fontSize: "16px" }}>
+                        This step is disabled. Complete the current step to
+                        proceed.
+                      </span>
+                    ) : (
+                      ""
+                    )
+                  }
+                >
+                  <span>
+                    <StepButton
+                      onClick={() => {
+                        if (index === 0) {
+                          discardChanges();
+                        } else if (index > 0) {
+                          handleBack(index)();
+                        }
+                      }}
+                      disabled={isDisabled}
+                    >
+                      <StepLabel>{step}</StepLabel>
+                    </StepButton>
+                  </span>
+                </Tooltip>
+              </Step>
+            );
+          })}
         </Stepper>
-      </Box> 
+      </Box>
       <Grid
         container
         justifyContent="space-between"
@@ -278,7 +309,7 @@ const ISCCreatorHeader = ({
                     <IconButton
                       size="small"
                       color="primary"
-                      href="https://youtu.be/DbSOaCXwPNk"  //TODO: Link hinzufuegen
+                      href="https://youtu.be/DbSOaCXwPNk" //TODO: Link hinzufuegen
                       target="_blank"
                     >
                       <SmartDisplayIcon />
@@ -373,11 +404,9 @@ const ISCCreatorHeader = ({
                       }
                       variant="contained"
                       startIcon={<SaveIcon />}
-                      onClick={ () => {
-                        saveIndicator()
-
-                      }
-                        }
+                      onClick={() => {
+                        saveIndicator();
+                      }}
                     >
                       Save
                     </Button>

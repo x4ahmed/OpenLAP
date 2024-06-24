@@ -14,6 +14,7 @@ import {
   Slide,
   Typography,
   Box,
+  Tooltip,
 } from "@mui/material";
 import {
   Dataset as DatasetIcon,
@@ -29,6 +30,7 @@ import ISCCreatorHeader from "./ISCCreatorHeader";
 import ChartList from "./Visualization/components/ChartList";
 
 export default function ISCCreator() {
+  const [hover, setHover] = useState(false);
   const stepsInitial = [
     "Fill the informations of the indicator",
     "Choose the start method",
@@ -50,7 +52,6 @@ export default function ISCCreator() {
     "Generate the Dataset",
     "Preview and Finalize",
   ];
-  // const [activeStep, setActiveStep] = useState(0);
 
   // To make the stepper dynamic
   const [steps, setSteps] = useState(
@@ -61,7 +62,6 @@ export default function ISCCreator() {
     JSON.parse(sessionStorage.getItem("openlap-settings"))?.selectedMethod ||
       null
   );
-
   const [activeStep, setActiveStep] = useState(
     JSON.parse(sessionStorage.getItem("openlap-settings"))?.activeStep || 0
   );
@@ -397,6 +397,35 @@ export default function ISCCreator() {
       setSteps(stepsForCreatingDataSet);
     }
   };
+  // This function is for the back button in visualization part
+  const handleBack11ButtonClick = () => {
+    if (userSelectsOnlyVisualization) {
+      toggleUserSelectsVisualization();
+      setUserSelectsOnlyVisualization(false);
+      setSteps(stepsInitial);
+      setActiveStep(activeStep - 1);
+      return;
+    }
+    if (!userSelectsDataset && userSelectsVisualization) {
+      toggleUserSelectsDataset();
+      setActiveStep(activeStep - 1);
+    }
+    toggleUserSelectsVisualization();
+  };
+
+  const handleBack = (index) => {
+    return () => {
+      if (activeStep > index && index === 1 && userSelectsOnlyVisualization) {
+        handleBack11ButtonClick();
+      } else if (
+        activeStep > index &&
+        index === 3 &&
+        !userSelectsOnlyVisualization
+      ) {
+        handleBack11ButtonClick();
+      }
+    };
+  };
 
   return (
     <>
@@ -468,6 +497,8 @@ export default function ISCCreator() {
             steps={steps}
             stepsInitial={stepsInitial}
             setSteps={setSteps}
+            handleBack= {handleBack}
+            
           />
           {userCreatesIndicator && (
             <>
@@ -490,66 +521,75 @@ export default function ISCCreator() {
                           sx={{ py: 2, zIndex: 1 }}
                         >
                           <Grid item>
-                            <Paper
-                              elevation={0}
-                              sx={{
-                                height: 150,
-                                width: 150,
-                                border: "3px solid",
-                                borderColor: "openlapTheme.secondary2",
-                                "&:hover": {
-                                  boxShadow: 5,
-                                  backgroundColor: "openlapTheme.light",
-                                },
-                                p: 2,
-                                borderRadius: 2,
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                setUserSelectsOnlyVisualization(true);
-                                toggleUserSelectsVisualization();
-                                handleMethodSelection("visualization");
-                                setActiveStep(activeStep + 1);
-                              }}
+                            <Tooltip
+                              title="Click to begin with the visualization, followed by data creation."
+                              arrow
                             >
-                              <Typography variant="h6" align="center">
-                                Select Visualization
-                              </Typography>
-                            </Paper>
+                              <Paper
+                                elevation={0}
+                                sx={{
+                                  height: 150,
+                                  width: 150,
+                                  border: "3px solid",
+                                  borderColor: "openlapTheme.secondary2",
+                                  "&:hover": {
+                                    boxShadow: 5,
+                                    backgroundColor: "openlapTheme.light",
+                                  },
+                                  p: 2,
+                                  borderRadius: 2,
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  setUserSelectsOnlyVisualization(true);
+                                  toggleUserSelectsVisualization();
+                                  handleMethodSelection("visualization");
+                                  setActiveStep(activeStep + 1);
+                                }}
+                              >
+                                <Typography variant="h6" align="center">
+                                  Select Visualization
+                                </Typography>
+                              </Paper>
+                            </Tooltip>
                           </Grid>
-
                           <Grid item>
-                            <Paper
-                              elevation={0}
-                              sx={{
-                                height: 150,
-                                width: 150,
-                                border: "3px solid",
-                                borderColor: "openlapTheme.secondary",
-                                "&:hover": {
-                                  boxShadow: 5,
-                                  backgroundColor: "openlapTheme.light",
-                                },
-                                p: 2,
-                                borderRadius: 2,
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                toggleUserSelectsDataset();
-                                handleMethodSelection("dataset");
-                                setActiveStep(activeStep + 1);
-                              }}
+                            <Tooltip
+                              title="Click to start by creating the data, followed by visualizing it with our tools."
+                              arrow
                             >
-                              <Typography variant="h6" align="center">
-                                Select Data
-                              </Typography>
-                            </Paper>
+                              <Paper
+                                elevation={0}
+                                sx={{
+                                  height: 150,
+                                  width: 150,
+                                  border: "3px solid",
+                                  borderColor: "openlapTheme.secondary",
+                                  "&:hover": {
+                                    boxShadow: 5,
+                                    backgroundColor: "openlapTheme.light",
+                                  },
+                                  p: 2,
+                                  borderRadius: 2,
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  toggleUserSelectsDataset();
+                                  handleMethodSelection("dataset");
+                                  setActiveStep(activeStep + 1);
+                                }}
+                              >
+                                <Typography variant="h6" align="center">
+                                  Select Data
+                                </Typography>
+                              </Paper>
+                            </Tooltip>
                           </Grid>
                         </Grid>
                       </Grid>
@@ -681,23 +721,7 @@ export default function ISCCreator() {
                         <Button
                           variant="outlined"
                           startIcon={<KeyboardArrowLeftIcon />}
-                          onClick={() => {
-                            if (userSelectsOnlyVisualization) {
-                              toggleUserSelectsVisualization();
-                              setUserSelectsOnlyVisualization(false);
-                              setSteps(stepsInitial);
-                              setActiveStep(activeStep - 1);
-                              return;
-                            }
-                            if (
-                              !userSelectsDataset &&
-                              userSelectsVisualization
-                            ) {
-                              toggleUserSelectsDataset();
-                              setActiveStep(activeStep - 1);
-                            }
-                            toggleUserSelectsVisualization();
-                          }}
+                          onClick={handleBack11ButtonClick}
                         >
                           Back1&&&&
                         </Button>
