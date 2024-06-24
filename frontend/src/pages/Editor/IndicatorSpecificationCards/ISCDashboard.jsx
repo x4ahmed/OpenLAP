@@ -282,6 +282,21 @@ const ISCDashboard = () => {
     localStorage.setItem("openlap-isc-dashboard", JSON.stringify(filteredISC));
   };
 
+  const handleDragOver = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+  const handleDragEnter = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+  const handleDrop = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files[0];
+    setFile(droppedFile);
+  };
+
   const handleUploadFile = () => {
     const reader = new FileReader();
     reader.onload = async ({ target }) => {
@@ -849,6 +864,9 @@ const ISCDashboard = () => {
                   borderRadius: 2,
                   mb: 1,
                 }}
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDrop={handleDrop}
               >
                 <Link component="label" sx={{ cursor: "pointer" }}>
                   Click here to select a file to import
@@ -858,6 +876,7 @@ const ISCDashboard = () => {
                     onChange={(event) => setFile(event.target.files[0])}
                     type="file"
                     accept=".json"
+                    
                   />
                 </Link>
               </Grid>
