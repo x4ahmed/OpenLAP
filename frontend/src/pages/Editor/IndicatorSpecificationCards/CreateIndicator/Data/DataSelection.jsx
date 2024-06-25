@@ -343,7 +343,6 @@ export default function DataSelection({
   // Function to add a new column to the dataset
   const handleAddNewColumn = () => {
     let fieldUUID = uuidv4();
-    let fieldUUID = uuidv4();
     const newColumnData = [
       ...columnData,
       {
@@ -1004,7 +1003,6 @@ export default function DataSelection({
               onChange={(e) => setColumnName(e.target.value)}
               variant="outlined"
             />
-            />
             <Grid container>
               <Grid item xs={12}>
                 <Grid container alignItems="center">
@@ -1096,7 +1094,6 @@ export default function DataSelection({
                       error ? "Number of rows must be at least 1" : ""
                     }
                     InputProps={{
-                      inputProps: { min: 1 },
                       inputProps: { min: 1 },
                     }}
                   />
@@ -1305,6 +1302,7 @@ export default function DataSelection({
               How many rows would you like to add in the table?
             </Typography>
             <TextField
+              placeholder="Please enter a number above 0!"
               min="1"
               autoFocus
               fullWidth
@@ -1319,7 +1317,6 @@ export default function DataSelection({
               error={error}
               helperText={error ? "Number of rows must be at least 1" : ""}
               InputProps={{
-                inputProps: { min: 1 },
                 inputProps: { min: 1 },
               }}
             />
@@ -1353,20 +1350,6 @@ export default function DataSelection({
 
 const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
   const [file, setFile] = useState({ name: "" });
-  const handleDragOver = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-  };
-  const handleDragEnter = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-  };
-  const handleDrop = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    const droppedFile = event.dataTransfer.files[0];
-    setFile(droppedFile);
-  };
 
   const handleUploadFile = () => {
     const reader = new FileReader();
@@ -1544,7 +1527,7 @@ const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
             onDragEnter={handleDragEnter}
           >
             <Link component="label" sx={{ cursor: "pointer" }}>
-              Choose a file or drag it here
+              Click here to select a file to upload
               <input
                 hidden
                 multiple
