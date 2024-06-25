@@ -11,6 +11,7 @@ export const MENU_1 = "Menu 1 set";
 export const MENU_2 = "Menu 2 set";
 export const OPEN_VIS_ACCORDION = "Open/close visualization tab";
 export const OPEN_EDIT_PANEL = "Open/close edit panel";
+export const SAVE_ISC_INDICATOR = "Save ISC indicator";
 
 export const setIndicatorName = (indicatorName) => ({
   type: INDICATOR_NAME,
@@ -63,6 +64,11 @@ export const openEditPanel = () => ({
   type: OPEN_EDIT_PANEL,
 });
 
+export const saveISCIndicator = (iscData) => ({
+  type: SAVE_ISC_INDICATOR,
+  iscData,
+});
+
 const initialState = {
   indicatorName: "",
   visualization: {
@@ -79,6 +85,7 @@ const initialState = {
     rowData: [],
     columnDefs: [],
   },
+  listofIscIndicators: [],
 };
 
 // data: {
@@ -186,6 +193,11 @@ export default function editorReducer(state = initialState, action) {
           editPanel: setOpen,
         },
       };
+      case SAVE_ISC_INDICATOR:
+        return {
+          ...state,
+          listofIscIndicators: [...state.listofIscIndicators, action.iscData],
+        };
     default:
       return state;
   }

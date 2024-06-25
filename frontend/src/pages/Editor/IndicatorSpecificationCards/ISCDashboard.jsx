@@ -52,7 +52,7 @@ import { v4 as uuidv4 } from "uuid";
 const ISCDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [search, setSearch] = useState("");
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [onProgressDialog, setOnProgressDialog] = useState(false);
   const [openUploadJSONModal, setOpenUploadJSONModal] = useState(false);
@@ -312,6 +312,11 @@ const ISCDashboard = () => {
     document.body.removeChild(link);
   };
 
+  const handleSearchIndicators = (e) => {
+    const newSearchTerm = e.target.value;
+    setSearch(newSearchTerm);
+};
+
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -401,10 +406,10 @@ const ISCDashboard = () => {
               <Grid container alignItems="center">
                 <Grid item xs sx={{ pr: 1 }}>
                   <TextField
-                    disabled
                     fullWidth
                     size="small"
                     placeholder="Search for indicators..."
+                    onChange={handleSearchIndicators}
                   />
                 </Grid>
                 <Grid item>
@@ -474,7 +479,7 @@ const ISCDashboard = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {parsedISCData
+                {parsedISCData.filter((item) => item.indicatorName.toLowerCase().includes(search.toLowerCase()))
                   .sort(
                     (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
                   )

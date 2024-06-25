@@ -26,6 +26,7 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import goalList from "../../../../utils/data/goalList.js";
 import { useSnackbar } from "notistack";
 import SmartDisplayIcon from "@mui/icons-material/SmartDisplay";
+import { saveISCIndicator } from "../../../../utils/redux/reducers/iscReducer.js";
 
 const filter = createFilterOptions();
 
@@ -194,6 +195,10 @@ const ISCCreatorHeader = ({
       }
       return item;
     });
+    console.log("Dispatching existing saveISCIndicator");
+    var dispatchedItem = listOfISCs.find((item) => item.id === currentISC.id);
+    console.log("dispatchedItem", dispatchedItem);
+    dispatch(saveISCIndicator(dispatchedItem));
 
     if (!listOfISCs.some((item) => item.id === currentISC.id)) {
       listOfISCs.push({
@@ -210,6 +215,8 @@ const ISCCreatorHeader = ({
         indicatorDataArray: currentISC.indicatorDataArray,
         lastUpdated: new Date(),
       });
+      console.log("Dispatching saveISCIndicator");
+      dispatch(saveISCIndicator(listOfISCs[listOfISCs.length - 1]));
     }
 
     localStorage.setItem("openlap-isc-dashboard", JSON.stringify(listOfISCs));

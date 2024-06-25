@@ -631,19 +631,27 @@ export default function DataSelection({
                             arrow
                             title={
                               <Typography variant="body2" sx={{ p: 1 }}>
-                                More options
+                                Delete Dataset
                               </Typography>
                             }
                           >
-                            <IconButton
+                            <IconButton aria-label="Example">
+                            <DeleteIcon
+                              onClick={() => setOpenDeleteModal(true)}
+                              fontSize="small"
+                              color="error"
+                            ></DeleteIcon>
+                            </IconButton>
+
+                            {/* <IconButton
                               color="primary"
                               onClick={handleClickDataTableMenu}
                             >
                               <MoreVertIcon />
-                            </IconButton>
+                            </IconButton> */}
                           </Tooltip>
 
-                          <Menu
+                          {/* <Menu
                             anchorEl={anchorElDataTableMenu}
                             open={openDataTableMenu}
                             onClose={handleCloseDataTableMenu}
@@ -657,13 +665,15 @@ export default function DataSelection({
                               horizontal: "right",
                             }}
                           >
+                           
+                            fontSize="small" color="error" />
                             <MenuItem onClick={() => setOpenDeleteModal(true)}>
                               <ListItemIcon>
                                 <DeleteIcon fontSize="small" color="error" />
                               </ListItemIcon>
-                              <ListItemText>Delete dataset</ListItemText>
+                              <ListItemText>JULE</ListItemText>
                             </MenuItem>
-                          </Menu>
+                          </Menu> */}
                         </Grid>
                       </Grid>
                     </Grid>
