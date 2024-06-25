@@ -414,6 +414,8 @@ export default function ISCCreator() {
   };
 
   const handleBack = (index) => {
+    console.log("index", index); 
+    console.log("activeStep", activeStep);
     return () => {
       if (activeStep > index && index === 1 && userSelectsOnlyVisualization) {
         handleBack11ButtonClick();
@@ -424,7 +426,40 @@ export default function ISCCreator() {
       ) {
         handleBack11ButtonClick();
       }
+      else if (activeStep > index && index === 2 && userSelectsOnlyVisualization) {
+        handleGoBackToSelectVisualization();
+      }
+      else if (activeStep > index && index === 2 && userSelectsDataset) {
+        handleGoBackToSelectDataSetGenerationMethod();
+      }
+      else if (activeStep > index && index === 3 && userSelectsOnlyVisualization) {
+        handleGoBackToSelectDataSetGenerationMethod();
+      }
+      else if(activeStep === 5 && index === 1){
+        console.log("MANGO");
+      }
     };
+  };
+
+  const handleGoBackToSelectVisualization = () => {
+    if (userSelectsOnlyVisualization) {
+      toggleUserSelectsVisualization();
+      toggleUserSelectsDataset();
+      setActiveStep(activeStep - 1);
+    }
+    if (!userSelectsOnlyVisualization) {
+      toggleUserSelectsDataset();
+      setSteps(stepsInitial);
+      setActiveStep(activeStep - 1);
+    }
+  };
+
+  const handleGoBackToSelectDataSetGenerationMethod = () => {
+    setDataState({
+      ...dataState,
+      status: false,
+    });
+    setActiveStep(activeStep - 1);
   };
 
   return (

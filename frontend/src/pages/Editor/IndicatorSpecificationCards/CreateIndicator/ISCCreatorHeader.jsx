@@ -250,7 +250,7 @@ const ISCCreatorHeader = ({
       <Box sx={{ width: "100%" }}>
         <Stepper nonLinear activeStep={activeStep} alternativeLabel>
           {steps.map((step, index) => {
-            const isDisabled = activeStep < index;
+            const isDisabled = activeStep < index || activeStep === 5;
 
             return (
               <Step key={index}>

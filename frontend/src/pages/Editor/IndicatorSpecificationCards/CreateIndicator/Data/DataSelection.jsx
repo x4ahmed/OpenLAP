@@ -191,6 +191,7 @@ export default function DataSelection({
       status: true,
     });
     setOpenUploadCSVModal((prevState) => !prevState);
+    setActiveStep(activeStep + 1);
   };
 
   const handleUnpopulateData = (clear = false) => {
@@ -555,8 +556,9 @@ export default function DataSelection({
               >
                 Import Data
                 <IconButton
-                  onClick={() =>
-                    setOpenUploadCSVModal((prevState) => !prevState)
+                  onClick={() => {
+                    setOpenUploadCSVModal((prevState) => !prevState);
+                  }
                   }
                 >
                   <CloseIcon />
@@ -1375,7 +1377,7 @@ export default function DataSelection({
   );
 }
 
-const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
+const CSVUploader = ({ handlePopulateDataAndCloseModal, setActiveStep, activeStep }) => {
   const [file, setFile] = useState({ name: "" });
 
   const handleUploadFile = () => {
