@@ -272,7 +272,7 @@ const ISCDashboard = () => {
     const filteredISC = deleteSelected
       ? parsedISCData.filter((parsedISC) => !selected.includes(parsedISC.id))
       : parsedISCData.filter((parsedISC) => parsedISC.id !== toBeDeleted.id);
-      
+
     filteredISC.sort(
       (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
     );
@@ -429,6 +429,27 @@ const ISCDashboard = () => {
                 New
               </Button>
             </Tooltip>
+            <Grid item>
+              {numSelected > 0 ? (
+                <>
+                  <Tooltip title="Export Indicator">
+                    <IconButton onClick={() => handleDownloadFile(false)}>
+                      <GetAppIcon fontSize="small" color="primary" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton
+                      onClick={() => {
+                        setDeleteDialog(true);
+                        setDeleteSelected(true);
+                      }}
+                    >
+                      <DeleteIcon sx={{ color: red[500] }} />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              ) : null}
+            </Grid>
             {numSelected > 0 && (
               <Typography
                 sx={{ ml: 2 }}
@@ -458,28 +479,6 @@ const ISCDashboard = () => {
                 autoFocus={isSearchFocused}
                 onBlur={() => setIsSearchFocused(false)}
               />
-            </Grid>
-
-            <Grid item>
-              {numSelected > 0 ? (
-                <>
-                  <Tooltip title="Delete">
-                    <IconButton
-                      onClick={() => {
-                        setDeleteDialog(true);
-                        setDeleteSelected(true)
-                      }}
-                    >
-                      <DeleteIcon sx={{ color: red[500] }} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Export Indicator">
-                    <IconButton onClick={() => handleDownloadFile(false)}>
-                      <GetAppIcon fontSize="small" color="primary" />
-                    </IconButton>
-                  </Tooltip>
-                </>
-              ) : null}
             </Grid>
             <Grid item>
               <IconButton color="primary" disabled>
@@ -664,9 +663,6 @@ const ISCDashboard = () => {
                       <TableRow
                         hover
                         key={index}
-                        selected={isItemSelected}
-                        aria-checked={isItemSelected}
-                        onClick={(event) => handleRowClick(event, row.id)}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
@@ -679,6 +675,9 @@ const ISCDashboard = () => {
                               inputProps={{
                                 "aria-labelledby": `enhanced-table-checkbox-${index}`,
                               }}
+                              selected={isItemSelected}
+                              aria-checked={isItemSelected}
+                              onClick={(event) => handleRowClick(event, row.id)}
                             />
                             <Box display="flex" flexDirection="column">
                               <Typography variant="body1" gutterBottom>
@@ -771,7 +770,7 @@ const ISCDashboard = () => {
             <MenuItem
               onClick={() => {
                 setDeleteDialog(true);
-                setDeleteSelected(false)
+                setDeleteSelected(false);
                 setToBeDeleted(tempIndicatorSelected);
               }}
             >
@@ -876,7 +875,6 @@ const ISCDashboard = () => {
                     onChange={(event) => setFile(event.target.files[0])}
                     type="file"
                     accept=".json"
-                    
                   />
                 </Link>
               </Grid>
