@@ -423,18 +423,16 @@ const Sidebar = ({ open, testUser }) => {
           </div>
 
           <Button onClick={handleSignOutProcess}>
-            {!expanded && (
-              <Tooltip title={<Typography fontSize={15}>Sign out</Typography>}>
+            <Tooltip title={<Typography fontSize={15}>Sign out</Typography>}>
                 <ListItemIcon
                   sx={{
-                    padding: "0 15px 5px", // Add padding for the icon when sidebar is collapsed
+                    padding: "0 15px 5px",
                   }}
                 >
                   <LogoutIcon />
                 </ListItemIcon>
               </Tooltip>
-            )}
-            {expanded && <ListItemText>SIGNOUT</ListItemText>}
+            <ListItemText>SIGNOUT</ListItemText>
           </Button>
         </div>
       </Drawer>
