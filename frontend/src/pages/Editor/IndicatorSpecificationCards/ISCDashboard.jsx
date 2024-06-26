@@ -869,7 +869,7 @@ const ISCDashboard = () => {
                 onDrop={handleDrop}
               >
                 <Link component="label" sx={{ cursor: "pointer" }}>
-                  Click here to select a file to import
+                  Choose a file or drag it here.
                   <input
                     hidden
                     multiple
