@@ -1351,6 +1351,23 @@ export default function DataSelection({
 const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
   const [file, setFile] = useState({ name: "" });
 
+  const handleDragOver = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  const handleDragEnter = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files[0];
+    setFile(droppedFile);
+  };
+
   const handleUploadFile = () => {
     const reader = new FileReader();
     reader.onload = async ({ target }) => {
@@ -1383,23 +1400,6 @@ const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
       );
     };
     reader.readAsText(file);
-  };
-
-  const handleDragOver = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-  };
-
-  const handleDragEnter = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-  };
-
-  const handleDrop = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    const droppedFile = event.dataTransfer.files[0];
-    setFile(droppedFile);
   };
 
   /**
@@ -1527,7 +1527,7 @@ const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
             onDragEnter={handleDragEnter}
           >
             <Link component="label" sx={{ cursor: "pointer" }}>
-              Click here to select a file to upload
+              Choose a file or drag it here.
               <input
                 hidden
                 multiple
