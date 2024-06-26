@@ -1077,7 +1077,6 @@ export default function DataSelection({
                     How many rows would you like to add in the table?
                   </Typography>
                   <TextField
-                    placeholder="Please enter a number above 0!"
                     autoFocus={columnName !== ""}
                     defaultValue={rowData.length ? rowData.length : ""}
                     fullWidth
@@ -1091,7 +1090,9 @@ export default function DataSelection({
                     onChange={handleChange}
                     error={error}
                     helperText={
-                      error ? "Number of rows must be at least 1" : ""
+                      error
+                        ? "Invalid entry: system only accepts entries greater than 1"
+                        : ""
                     }
                     InputProps={{
                       inputProps: { min: 1 },
@@ -1302,7 +1303,6 @@ export default function DataSelection({
               How many rows would you like to add in the table?
             </Typography>
             <TextField
-              placeholder="Please enter a number above 0!"
               min="1"
               autoFocus
               fullWidth
@@ -1315,7 +1315,11 @@ export default function DataSelection({
               onChange={handleChange}
               variant="outlined"
               error={error}
-              helperText={error ? "Number of rows must be at least 1" : ""}
+              helperText={
+                error
+                  ? "Invalid entry: system only accepts entries greater than 1"
+                  : ""
+              }
               InputProps={{
                 inputProps: { min: 1 },
               }}
