@@ -693,9 +693,11 @@ export default function DataSelection({
                 {!loading && (
                   <DataGrid
                     apiRef={apiRef}
-                    disableColumnResize={true}
-                    // checkboxSelection
-                    columns={dataState.columnData}
+                    disableColumnResize={false}
+                    columns={dataState.columnData.map((column) => ({
+                      ...column,
+                      minWidth: 150,
+                    }))}
                     columnMenuClearIcon={<ClearAllIcon />}
                     cellModesModel={cellModesModel}
                     disableRowSelectionOnClick
