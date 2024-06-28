@@ -60,10 +60,18 @@ export default function DataSelection({
   handleAddNewRows,
   handleDeleteIndicatorData,
   setDataState,
+  setActiveStep,
   resetChartSelected,
   toggleEditPanel,
   toggleUserSelectsDataset,
   toggleUserSelectsVisualization,
+  userSelectsOnlyVisualization,
+  userFinalizeSelection,
+  setUserFinalizeSelection,
+  activeStep,
+  steps,
+  stepsInitial,
+  setSteps,
 }) {
   const columnTypes = [
     {
@@ -157,6 +165,7 @@ export default function DataSelection({
       setOpenUploadCSVModal((prevState) => !prevState);
       return;
     }
+    setActiveStep(activeStep + 1);
     setDataState({
       ...dataState,
       status: true,
@@ -182,6 +191,7 @@ export default function DataSelection({
       status: true,
     });
     setOpenUploadCSVModal((prevState) => !prevState);
+    setActiveStep(activeStep + 1);
   };
 
   const handleUnpopulateData = (clear = false) => {
@@ -445,6 +455,43 @@ export default function DataSelection({
     setCellModesModel(newModel);
   }, []);
 
+  //These two functions are for the back buttons in creating dataset
+  const handleBack1ButtonClick = () => {
+    // TODO: Confirmation needed
+    // handleUnpopulateData();
+    backToDataSelection();
+    setActiveStep(activeStep - 1);
+  };
+  const handleBack2ButtonClick = () => {
+    if (userSelectsOnlyVisualization) {
+      toggleUserSelectsVisualization();
+      toggleUserSelectsDataset();
+      setActiveStep(activeStep - 1);
+    }
+    if (!userSelectsOnlyVisualization) {
+      toggleUserSelectsDataset();
+      setSteps(stepsInitial);
+      setActiveStep(activeStep - 1);
+    }
+  };
+  const handleBackfromDataSelection = (index) => {
+    return () => {
+      if (activeStep > index && index === 2 && userSelectsOnlyVisualization) {
+        handleBack2ButtonClick();
+      } else if (
+        activeStep > index && index === 1 && !userSelectsOnlyVisualization
+      ) {
+        handleBack2ButtonClick();
+      } else if (activeStep > index && index === 3 && userSelectsOnlyVisualization) {
+        handleBack1ButtonClick();
+      } else if (
+        activeStep > index && index === 2 && !userSelectsOnlyVisualization
+      ) {
+        handleBack1ButtonClick();
+      }
+    };
+  };
+
   return (
     <>
       {!dataState.status && (
@@ -453,7 +500,7 @@ export default function DataSelection({
             <Grid container justifyContent="space-between">
               <Button
                 variant="outlined"
-                onClick={() => toggleUserSelectsDataset()}
+                onClick={handleBack2ButtonClick}
                 startIcon={<KeyboardArrowLeftIcon />}
               >
                 Back
@@ -509,8 +556,9 @@ export default function DataSelection({
               >
                 Import Data
                 <IconButton
-                  onClick={() =>
-                    setOpenUploadCSVModal((prevState) => !prevState)
+                  onClick={() => {
+                    setOpenUploadCSVModal((prevState) => !prevState);
+                  }
                   }
                 >
                   <CloseIcon />
@@ -544,11 +592,7 @@ export default function DataSelection({
               <Button
                 variant="outlined"
                 startIcon={<KeyboardArrowLeftIcon />}
-                onClick={() => {
-                  // TODO: Confirmation needed
-                  // handleUnpopulateData();
-                  backToDataSelection();
-                }}
+                onClick={handleBack1ButtonClick}
               >
                 Back
               </Button>
@@ -556,11 +600,23 @@ export default function DataSelection({
                 variant="contained"
                 endIcon={<KeyboardArrowRightIcon />}
                 onClick={() => {
-                  toggleUserSelectsDataset();
-                  toggleUserSelectsVisualization();
+                  if (userSelectsOnlyVisualization) {
+                    setUserFinalizeSelection(true);
+                    toggleUserSelectsDataset();
+                    setDataState({
+                      ...dataState,
+                      status: true,
+                    });
+                    setActiveStep(activeStep + 1);
+                  }
+                  if (!userSelectsOnlyVisualization) {
+                    toggleUserSelectsDataset();
+                    toggleUserSelectsVisualization();
+                    setActiveStep(activeStep + 1);
+                  }
                 }}
               >
-                Visualization
+                Next
               </Button>
             </Grid>
           )}
@@ -1331,7 +1387,7 @@ export default function DataSelection({
   );
 }
 
-const CSVUploader = ({ handlePopulateDataAndCloseModal }) => {
+const CSVUploader = ({ handlePopulateDataAndCloseModal, setActiveStep, activeStep }) => {
   const [file, setFile] = useState({ name: "" });
 
   const handleUploadFile = () => {
