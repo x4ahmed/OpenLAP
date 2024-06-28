@@ -41,6 +41,7 @@ import {
   MoreVert as MoreVertIcon,
   InsertDriveFile as InsertDriveFileIcon,
 } from "@mui/icons-material";
+import Checkbox from "@mui/material/Checkbox";
 import { useDispatch } from "react-redux";
 import Chart from "react-apexcharts";
 import { setSidebarMenu } from "../../../utils/redux/reducers/reducer";
@@ -48,6 +49,8 @@ import { getLastUpdateDate } from "../../../utils/utils";
 import { useNavigate } from "react-router-dom";
 import defaultISCData from "../../../utils/data/defaultISCData";
 import { v4 as uuidv4 } from "uuid";
+import PropTypes from "prop-types";
+import { red } from "@mui/material/colors";
 
 const ISCDashboard = () => {
   const dispatch = useDispatch();
@@ -60,15 +63,12 @@ const ISCDashboard = () => {
     status: false,
     indicatorData: null,
   });
-  const [toBeDeleted, setToBeDeleted] = useState({
-    id: "",
-    indicatorName: "",
-    chartType: "",
-    lastUpdated: "",
-  });
+  const [toBeDeleted, setToBeDeleted] = useState([]);
   const [parsedISCData, setParsedISCData] = useState(
     JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || []
   );
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const defaultPreviewIndicator = {
     indicatorGoal: "",
     indicatorQuestion: "",
@@ -91,10 +91,12 @@ const ISCDashboard = () => {
   const [file, setFile] = useState({ name: "" });
   const [anchorEl, setAnchorEl] = useState(null);
   const [tempIndicatorSelected, setTempIndicatorSelected] = useState({});
+  const [batchIndicatorSelected, setBatchIndicatorSelected] = useState([]);
+  const [deleteSelected, setDeleteSelected] = useState(false);
   const open = Boolean(anchorEl);
 
-  const [anchorEl2, setAnchorEl2] = useState(null);
-  const open2 = Boolean(anchorEl2);
+  // const [anchorEl2, setAnchorEl2] = useState(null);
+  // const open2 = Boolean(anchorEl2);
 
   const handleClick = (event, indicator) => {
     setAnchorEl(event.currentTarget);
@@ -104,12 +106,12 @@ const ISCDashboard = () => {
     setAnchorEl(null);
     setTempIndicatorSelected({});
   };
-  const handleClick2 = (event, indicator) => {
-    setAnchorEl2(event.currentTarget);
-  };
-  const handleClose2 = () => {
-    setAnchorEl2(null);
-  };
+  // const handleClick2 = (event, indicator) => {
+  //   setAnchorEl2(event.currentTarget);
+  // };
+  // const handleClose2 = () => {
+  //   setAnchorEl2(null);
+  // };
 
   useEffect(() => {
     let ISCDashboard = JSON.parse(
@@ -267,29 +269,51 @@ const ISCDashboard = () => {
 
   const deleteISC = () => {
     setDeleteDialog((prevState) => !prevState);
-    let filteredISC = parsedISCData.filter(
-      (parsedISC) => parsedISC.id !== toBeDeleted.id
-    );
+    const filteredISC = deleteSelected
+      ? parsedISCData.filter((parsedISC) => !selected.includes(parsedISC.id))
+      : parsedISCData.filter((parsedISC) => parsedISC.id !== toBeDeleted.id);
+
     filteredISC.sort(
       (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
     );
     setParsedISCData(filteredISC);
+    setSelected([]);
     handleClose();
     localStorage.setItem("openlap-isc-dashboard", JSON.stringify(filteredISC));
+  };
+
+  const handleDragOver = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+  const handleDragEnter = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+  const handleDrop = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files[0];
+    setFile(droppedFile);
   };
 
   const handleUploadFile = () => {
     const reader = new FileReader();
     reader.onload = async ({ target }) => {
       try {
-        const json = JSON.parse(target.result);
-        setFile(json);
-        // console.log(json);
-        json.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-        setParsedISCData(json);
-        localStorage.setItem("openlap-isc-dashboard", JSON.stringify(json));
+        const newJson = JSON.parse(target.result);
+        const existingData =
+          JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || [];
+        const mergedData = [...existingData, ...newJson];
+        mergedData.sort(
+          (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+        );
+        setParsedISCData(mergedData);
+        localStorage.setItem(
+          "openlap-isc-dashboard",
+          JSON.stringify(mergedData)
+        );
         setOpenUploadJSONModal(false);
-        handleClose2();
       } catch {
         console.log("Invalid JSON file");
       }
@@ -297,11 +321,14 @@ const ISCDashboard = () => {
     reader.readAsText(file);
   };
 
-  const handleDownloadFile = () => {
+  const handleDownloadFile = (downloadAll = false) => {
     const parsedData = JSON.parse(
       localStorage.getItem("openlap-isc-dashboard")
     );
-    const fileData = JSON.stringify(parsedData);
+    const filteredISC = downloadAll
+      ? parsedData
+      : parsedData.filter((parsedISC) => selected.includes(parsedISC.id));
+    const fileData = JSON.stringify(filteredISC);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -311,6 +338,244 @@ const ISCDashboard = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  const handleSeacrhIndicator = (query, data) => {
+    if (!query) {
+      return data;
+    } else {
+      return data.filter((d) =>
+        d.indicatorName.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+  };
+  const dataFiltered = handleSeacrhIndicator(searchQuery, parsedISCData);
+
+  function EnhancedTableHead(props) {
+    const { onSelectAllClick, numSelected, rowCount } = props;
+
+    return (
+      <TableHead>
+        <TableRow>
+          <TableCell>
+            <Box display="flex" alignItems="center">
+              <Checkbox
+                color="primary"
+                indeterminate={numSelected > 0 && numSelected < rowCount}
+                checked={rowCount > 0 && numSelected === rowCount}
+                onChange={onSelectAllClick}
+                inputProps={{
+                  "aria-label": "select all Indicators",
+                }}
+              />
+              <Typography variant="overline" sx={{ fontWeight: "bold", ml: 1 }}>
+                Indicators
+              </Typography>
+            </Box>
+          </TableCell>
+          <TableCell align="right" padding="none">
+            <Typography variant="overline" sx={{ fontWeight: "bold" }}>
+              Charts
+            </Typography>
+          </TableCell>
+          <TableCell align="center"></TableCell>
+        </TableRow>
+      </TableHead>
+    );
+  }
+
+  EnhancedTableHead.propTypes = {
+    numSelected: PropTypes.number.isRequired,
+    onSelectAllClick: PropTypes.func.isRequired,
+    rowCount: PropTypes.number.isRequired,
+  };
+
+  function EnhancedTableToolbar(props) {
+    const { numSelected } = props;
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    return (
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={1}
+      >
+        <Grid item sm>
+          <Box display="flex" alignItems="center">
+            <Tooltip
+              arrow
+              title={
+                <Typography variant="body2" sx={{ p: 1 }}>
+                  Create a new indicator
+                </Typography>
+              }
+            >
+              <Button
+                disableElevation
+                color="primary"
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => handleCreateIndicator(false)}
+              >
+                New
+              </Button>
+            </Tooltip>
+            <Grid item>
+              {numSelected > 0 ? (
+                <>
+                  <Tooltip title="Export Indicator">
+                    <IconButton onClick={() => handleDownloadFile(false)}>
+                      <GetAppIcon fontSize="small" color="primary" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton
+                      onClick={() => {
+                        setDeleteDialog(true);
+                        setDeleteSelected(true);
+                      }}
+                    >
+                      <DeleteIcon sx={{ color: red[500] }} />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              ) : null}
+            </Grid>
+            {numSelected > 0 && (
+              <Typography
+                sx={{ ml: 2 }}
+                color="inherit"
+                variant="subtitle1"
+                component="div"
+              >
+                {numSelected} selected
+              </Typography>
+            )}
+          </Box>
+        </Grid>
+
+        <Grid item xs>
+          {/* // TODO: Add the search and filter options */}
+          <Grid container alignItems="center">
+            <Grid item xs sx={{ pr: 1 }}>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Search for indicators..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
+                onFocus={() => setIsSearchFocused(true)}
+                autoFocus={isSearchFocused}
+                onBlur={() => setIsSearchFocused(false)}
+              />
+            </Grid>
+            <Grid item>
+              <IconButton color="primary" disabled>
+                <FilterListIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton onClick={handleClick} color="primary">
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+
+                  horizontal: "right",
+                }}
+              >
+                <MenuItem onClick={() => setOpenUploadJSONModal(true)}>
+                  <ListItemIcon>
+                    <UploadIcon fontSize="small" color="primary" />
+                  </ListItemIcon>
+                  <ListItemText>Import Indicators</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => handleDownloadFile(true)}>
+                  <ListItemIcon>
+                    <GetAppIcon fontSize="small" color="primary" />
+                  </ListItemIcon>
+                  <ListItemText>Export All Indicators</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  EnhancedTableToolbar.propTypes = {
+    numSelected: PropTypes.number.isRequired,
+  };
+
+  const [selected, setSelected] = useState([]);
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    setRows(parsedISCData);
+  }, [parsedISCData]);
+
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelected = rows.map((n) => n.id);
+      const newBatchIndicatorSelected = rows.reduce((acc, curr) => {
+        acc[curr.id] = curr;
+        return acc;
+      }, {});
+      setSelected(newSelected);
+      setBatchIndicatorSelected(newBatchIndicatorSelected);
+      return;
+    }
+    setSelected([]);
+    setBatchIndicatorSelected([]);
+  };
+
+  const handleRowClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected = [];
+    let newBatchIndicatorSelected = { ...batchIndicatorSelected };
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+      newBatchIndicatorSelected[id] = rows.find((row) => row.id === id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+      delete newBatchIndicatorSelected[id];
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+      delete newBatchIndicatorSelected[id];
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+      delete newBatchIndicatorSelected[id];
+    }
+
+    setSelected(newSelected);
+    setBatchIndicatorSelected(newBatchIndicatorSelected);
+  };
+
+  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
     <>
@@ -370,83 +635,7 @@ const ISCDashboard = () => {
         }}
       >
         <Grid item xs={12}>
-          <Grid
-            container
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={1}
-          >
-            <Grid item sm>
-              <Tooltip
-                arrow
-                title={
-                  <Typography variant="body2" sx={{ p: 1 }}>
-                    Create a new indicator
-                  </Typography>
-                }
-              >
-                <Button
-                  disableElevation
-                  color="primary"
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => handleCreateIndicator(false)}
-                >
-                  New
-                </Button>
-              </Tooltip>
-            </Grid>
-            <Grid item xs>
-              {/* // TODO: Add the search and filter options */}
-              <Grid container alignItems="center">
-                <Grid item xs sx={{ pr: 1 }}>
-                  <TextField
-                    disabled
-                    fullWidth
-                    size="small"
-                    placeholder="Search for indicators..."
-                  />
-                </Grid>
-                <Grid item>
-                  <IconButton color="primary" disabled>
-                    <FilterListIcon />
-                  </IconButton>
-                </Grid>
-                <Grid item>
-                  <IconButton onClick={handleClick2} color="primary">
-                    <MoreVertIcon />
-                  </IconButton>
-                  <Menu
-                    anchorEl={anchorEl2}
-                    open={open2}
-                    onClose={handleClose2}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-
-                      horizontal: "right",
-                    }}
-                  >
-                    <MenuItem onClick={() => setOpenUploadJSONModal(true)}>
-                      <ListItemIcon>
-                        <UploadIcon fontSize="small" color="primary" />
-                      </ListItemIcon>
-                      <ListItemText>Import Indicators</ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={handleDownloadFile}>
-                      <ListItemIcon>
-                        <GetAppIcon fontSize="small" color="primary" />
-                      </ListItemIcon>
-                      <ListItemText>Export Indicator</ListItemText>
-                    </MenuItem>
-                  </Menu>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
+          <EnhancedTableToolbar numSelected={selected.length} />
         </Grid>
         <Grid item xs={12}>
           <TableContainer
@@ -458,95 +647,101 @@ const ISCDashboard = () => {
             }}
           >
             <Table stickyHeader size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <Typography variant="overline" sx={{ fontWeight: "bold" }}>
-                      Indicators
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right" padding="none">
-                    <Typography variant="overline" sx={{ fontWeight: "bold" }}>
-                      Charts
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="center"></TableCell>
-                </TableRow>
-              </TableHead>
+              <EnhancedTableHead
+                numSelected={selected.length}
+                onSelectAllClick={handleSelectAllClick}
+                rowCount={rows.length}
+              />
               <TableBody>
-                {parsedISCData
+                {dataFiltered
                   .sort(
                     (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
                   )
-                  .map((row, index) => (
-                    <TableRow
-                      hover
-                      key={index}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell component="th" scope="row" sx={{ py: 1.5 }}>
-                        <Typography variant="body1" gutterBottom>
-                          {row.indicatorName}
-                        </Typography>
-
-                        <Typography variant="body2">
-                          <i>
-                            Last updated: {getLastUpdateDate(row.lastUpdated)}
-                          </i>
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right" padding="none">
-                        <Typography variant="body2" gutterBottom>
-                          {row.chartName}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Grid
-                          container
-                          justifyContent="flex-end"
-                          spacing={1}
-                          sx={{ width: "100px" }}
-                        >
-                          <Grid item>
-                            <Tooltip
-                              arrow
-                              title={
-                                <Typography variant="body2" sx={{ p: 1 }}>
-                                  Preview
-                                </Typography>
-                              }
-                            >
-                              <IconButton
-                                color="primary"
-                                onClick={() => handlePreviewIndicator(row)}
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    return (
+                      <TableRow
+                        hover
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row" sx={{ py: 1.5 }}>
+                          <Box display="flex" alignItems="center">
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                "aria-labelledby": `enhanced-table-checkbox-${index}`,
+                              }}
+                              selected={isItemSelected}
+                              aria-checked={isItemSelected}
+                              onClick={(event) => handleRowClick(event, row.id)}
+                            />
+                            <Box display="flex" flexDirection="column">
+                              <Typography variant="body1" gutterBottom>
+                                {row.indicatorName}
+                              </Typography>
+                              <Typography variant="body2">
+                                <i>
+                                  Last updated:{" "}
+                                  {getLastUpdateDate(row.lastUpdated)}
+                                </i>
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right" padding="none">
+                          <Typography variant="body2" gutterBottom>
+                            {row.chartName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Grid
+                            container
+                            justifyContent="flex-end"
+                            spacing={1}
+                            sx={{ width: "100px" }}
+                          >
+                            <Grid item>
+                              <Tooltip
+                                arrow
+                                title={
+                                  <Typography variant="body2" sx={{ p: 1 }}>
+                                    Preview
+                                  </Typography>
+                                }
                               >
-                                <VisibilityIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </Grid>
-
-                          <Grid item>
-                            <Tooltip
-                              arrow
-                              title={
-                                <Typography variant="body2" sx={{ p: 1 }}>
-                                  More options
-                                </Typography>
-                              }
-                            >
-                              <IconButton
-                                onClick={(event) => handleClick(event, row)}
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => handlePreviewIndicator(row)}
+                                >
+                                  <VisibilityIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
+                            <Grid item>
+                              <Tooltip
+                                arrow
+                                title={
+                                  <Typography variant="body2" sx={{ p: 1 }}>
+                                    More options
+                                  </Typography>
+                                }
                               >
-                                <MoreVertIcon color="primary" />
-                              </IconButton>
-                            </Tooltip>
+                                <IconButton
+                                  onClick={(event) => handleClick(event, row)}
+                                >
+                                  <MoreVertIcon color="primary" />
+                                </IconButton>
+                              </Tooltip>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -575,6 +770,7 @@ const ISCDashboard = () => {
             <MenuItem
               onClick={() => {
                 setDeleteDialog(true);
+                setDeleteSelected(false);
                 setToBeDeleted(tempIndicatorSelected);
               }}
             >
@@ -667,9 +863,12 @@ const ISCDashboard = () => {
                   borderRadius: 2,
                   mb: 1,
                 }}
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDrop={handleDrop}
               >
                 <Link component="label" sx={{ cursor: "pointer" }}>
-                  Click here to select a file to import
+                  Choose a file or drag it here.
                   <input
                     hidden
                     multiple
