@@ -129,7 +129,7 @@ export default function DataSelection({
   const [selectionModel, setSelectionModel] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [value, setValue] = useState("");
-
+  const [error, setError] = useState(false);
   const open = Boolean(anchorEl);
 
   const [anchorElDataTableMenu, setAnchorElDataTableMenu] = useState(null);
@@ -142,6 +142,15 @@ export default function DataSelection({
     setAnchorElDataTableMenu(null);
   };
 
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setNumberOfRows(value);
+    if (value && value < 1) {
+      setError(true);
+    } else {
+      setError(false);
+    }
+  };
   const handlePopperOpen = (event) => {
     const id = event.currentTarget.dataset.id;
     const row = rowData.find((r) => r.id === id);
@@ -750,8 +759,11 @@ export default function DataSelection({
                 {!loading && (
                   <DataGrid
                     apiRef={apiRef}
-                    // checkboxSelection
-                    columns={dataState.columnData}
+                    disableColumnResize={false}
+                    columns={dataState.columnData.map((column) => ({
+                      ...column,
+                      minWidth: 150,
+                    }))}
                     columnMenuClearIcon={<ClearAllIcon />}
                     cellModesModel={cellModesModel}
                     disableRowSelectionOnClick
@@ -1142,8 +1154,17 @@ export default function DataSelection({
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    onChange={(e) => setNumberOfRows(e.target.value)}
                     variant="outlined"
+                    onChange={handleChange}
+                    error={error}
+                    helperText={
+                      error
+                        ? "Invalid entry: system only accepts entries greater than 1"
+                        : ""
+                    }
+                    InputProps={{
+                      inputProps: { min: 1 },
+                    }}
                   />
                 </>
               )}
@@ -1154,6 +1175,7 @@ export default function DataSelection({
               fullWidth
               color="primary"
               onClick={() => {
+                setError(false);
                 setOpenNewColumnNameModal(false);
                 setColumnName("");
                 setColumnNameExist({
@@ -1180,7 +1202,7 @@ export default function DataSelection({
             </Button>
             <Button
               fullWidth
-              disabled={columnName === "" || numberOfRows === 0}
+              disabled={columnName === "" || numberOfRows <= 0}
               type="submit"
               variant="contained"
             >
@@ -1337,7 +1359,7 @@ export default function DataSelection({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (numberOfRows !== 0) {
+            if (numberOfRows > 0) {
               setOpenRowModal(false);
               handleAddNewRows(numberOfRows);
               toggleEditPanel("", false);
@@ -1349,6 +1371,7 @@ export default function DataSelection({
               How many rows would you like to add in the table?
             </Typography>
             <TextField
+              min="1"
               autoFocus
               fullWidth
               id="filled-number"
@@ -1357,8 +1380,17 @@ export default function DataSelection({
               InputLabelProps={{
                 shrink: true,
               }}
-              onChange={(e) => setNumberOfRows(e.target.value)}
+              onChange={handleChange}
               variant="outlined"
+              error={error}
+              helperText={
+                error
+                  ? "Invalid entry: system only accepts entries greater than 1"
+                  : ""
+              }
+              InputProps={{
+                inputProps: { min: 1 },
+              }}
             />
           </DialogContent>
           <DialogActions>
@@ -1368,6 +1400,7 @@ export default function DataSelection({
               onClick={() => {
                 setOpenRowModal(false);
                 setNumberOfRows(0);
+                setError(false);
               }}
             >
               Cancel
@@ -1375,7 +1408,7 @@ export default function DataSelection({
             <Button
               fullWidth
               type="submit"
-              disabled={numberOfRows === 0}
+              disabled={numberOfRows <= 0}
               variant="contained"
             >
               Confirm
@@ -1389,6 +1422,23 @@ export default function DataSelection({
 
 const CSVUploader = ({ handlePopulateDataAndCloseModal, setActiveStep, activeStep }) => {
   const [file, setFile] = useState({ name: "" });
+
+  const handleDragOver = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  const handleDragEnter = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files[0];
+    setFile(droppedFile);
+  };
 
   const handleUploadFile = () => {
     const reader = new FileReader();
@@ -1544,9 +1594,12 @@ const CSVUploader = ({ handlePopulateDataAndCloseModal, setActiveStep, activeSte
               borderRadius: 2,
               mb: 1,
             }}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
           >
             <Link component="label" sx={{ cursor: "pointer" }}>
-              Click here to select a file to upload
+              Choose a file or drag it here.
               <input
                 hidden
                 multiple

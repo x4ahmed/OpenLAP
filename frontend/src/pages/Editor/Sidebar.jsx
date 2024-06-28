@@ -59,7 +59,8 @@ const Sidebar = ({ open, testUser }) => {
     openSignOutModal: false,
   });
 
-//   Common styles variable
+  // Common styles variable
+
   const expandedCommonStyles = (expanded) => ({
     ...(expanded ? { pl: 4 } : { pl: 3 }),
   });
@@ -164,9 +165,7 @@ const Sidebar = ({ open, testUser }) => {
         sx={{
           overflow: "hidden",
           width: drawerWidth,
-          ...(expanded
-            ? { whiteSpace: "normal" }
-            : { whiteSpace: "nowrap" }),
+          ...(expanded ? { whiteSpace: "normal" } : { whiteSpace: "nowrap" }),
           "& .MuiDrawer-paper": {
             overflow: "hidden",
             width: drawerWidth,
@@ -228,9 +227,7 @@ const Sidebar = ({ open, testUser }) => {
                   <ListItemIcon>
                     <StyleIcon />
                   </ListItemIcon>
-                  <ListItemText
-                    primary="Indicator Specification Cards (ISC)"
-                  />
+                  <ListItemText primary="Indicator Specification Cards (ISC)" />
                   {openISC ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </ListItemButton>
               </Tooltip>
@@ -238,24 +235,32 @@ const Sidebar = ({ open, testUser }) => {
                 <List component="div" disablePadding>
                   {iscMenus.map((menu, index) => {
                     return (
-                      <ListItemButton
-                        sx={{
-                          ...expandedCommonStyles(expanded),
-                        }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
+                      <Tooltip
                         key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
                       >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
+                        <ListItemButton
+                          sx={{
+                            ...expandedCommonStyles(expanded),
+                          }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
                     );
                   })}
                 </List>
@@ -263,35 +268,50 @@ const Sidebar = ({ open, testUser }) => {
             </List>
 
             <List>
-              <ListItemButton onClick={() => setOpenIndicator(!openIndicator)}>
-                <ListItemIcon>
-                  <BarChartIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={"Indicators"}
-                />
-                {openIndicator ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItemButton>
+              <Tooltip
+                title={<Typography fontSize={15}>Indicators</Typography>}
+                disableHoverListener={expanded}
+                placement="right"
+              >
+                <ListItemButton
+                  onClick={() => setOpenIndicator(!openIndicator)}
+                >
+                  <ListItemIcon>
+                    <BarChartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Indicators"} />
+                  {openIndicator ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+              </Tooltip>
+
               <Collapse in={openIndicator} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {indicatorMenus.map((menu, index) => {
                     return (
-                      <ListItemButton
-                        sx={{ ...expandedCommonStyles(expanded) }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
+                      <Tooltip
                         key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
                       >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
+                        <ListItemButton
+                          sx={{ ...expandedCommonStyles(expanded) }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
                     );
                   })}
                 </List>
@@ -299,35 +319,49 @@ const Sidebar = ({ open, testUser }) => {
             </List>
 
             <List>
-              <ListItemButton onClick={() => setOpenGQI(!openGQI)}>
-                <ListItemIcon>
-                  <QuizIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={"Goal-Question-Indicator"}
-                />
-                {openGQI ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItemButton>
+              <Tooltip
+                title={
+                  <Typography fontSize={15}>Goal-Question-Indicator</Typography>
+                }
+                disableHoverListener={expanded}
+                placement="right"
+              >
+                <ListItemButton onClick={() => setOpenGQI(!openGQI)}>
+                  <ListItemIcon>
+                    <QuizIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Goal-Question-Indicator"} />
+                  {openGQI ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+              </Tooltip>
               <Collapse in={openGQI} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {gqiMenus.map((menu, index) => {
                     return (
-                      <ListItemButton
-                        sx={{ ...expandedCommonStyles(expanded) }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
+                      <Tooltip
                         key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
                       >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
+                        <ListItemButton
+                          sx={{ ...expandedCommonStyles(expanded) }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
                     );
                   })}
                 </List>
@@ -335,36 +369,52 @@ const Sidebar = ({ open, testUser }) => {
             </List>
 
             <List>
-              <ListItemButton onClick={() => setOpenTools(!openTools)}>
-                <ListItemIcon>
-                  <ArchitectureIcon />
-                </ListItemIcon>
-                <ListItemText
-                  //   sx={expandedCommonStyles(expanded)}
-                  primary={"Tools"}
-                />
-                {openTools ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </ListItemButton>
+              <Tooltip
+                title={<Typography fontSize={15}>Tools</Typography>}
+                disableHoverListener={expanded}
+                placement="right"
+              >
+                <ListItemButton onClick={() => setOpenTools(!openTools)}>
+                  <ListItemIcon>
+                    <ArchitectureIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Tools"
+                  />
+                  {openTools ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+              </Tooltip>
+
               <Collapse in={openTools} timeout={"auto"} unmountOnExit>
                 <List component="div" disablePadding>
                   {toolsMenu.map((menu, index) => {
                     return (
-                      <ListItemButton
-                        sx={{ ...expandedCommonStyles(expanded) }}
-                        onClick={() => {
-                          navigate(menu.navigate);
-                          dispatch(setSidebarMenu(menu.navigate));
-                        }}
+                      <Tooltip
                         key={index}
-                        disabled={menu.disabled}
-                        selected={selectedMenu === menu.navigate}
+                        title={
+                          <Typography fontSize={15}>{menu.primary}</Typography>
+                        }
+                        disableHoverListener={expanded}
+                        placement="right"
                       >
-                        <ListItemIcon> {menu.icon} </ListItemIcon>
-                        <ListItemText
-                          primary={menu.primary}
-                          secondary={menu.secondary}
-                        />
-                      </ListItemButton>
+                        <ListItemButton
+                          sx={{
+                            ...expandedCommonStyles(expanded),
+                          }}
+                          onClick={() => {
+                            navigate(menu.navigate);
+                            dispatch(setSidebarMenu(menu.navigate));
+                          }}
+                          disabled={menu.disabled}
+                          selected={selectedMenu === menu.navigate}
+                        >
+                          <ListItemIcon> {menu.icon} </ListItemIcon>
+                          <ListItemText
+                            primary={menu.primary}
+                            secondary={menu.secondary}
+                          />
+                        </ListItemButton>
+                      </Tooltip>
                     );
                   })}
                 </List>
@@ -373,16 +423,16 @@ const Sidebar = ({ open, testUser }) => {
           </div>
 
           <Button onClick={handleSignOutProcess}>
-            {!expanded && (
-              <ListItemIcon
-                sx={{
-                  padding: "0 15px 5px", // Add padding for the icon when sidebar is collapsed
-                }}
-              >
-                <LogoutIcon />
-              </ListItemIcon>
-            )}
-            {expanded && <ListItemText>SIGNOUT</ListItemText>}
+            <Tooltip title={<Typography fontSize={15}>Sign out</Typography>}>
+                <ListItemIcon
+                  sx={{
+                    padding: "0 15px 5px",
+                  }}
+                >
+                  <LogoutIcon />
+                </ListItemIcon>
+              </Tooltip>
+            <ListItemText>SIGNOUT</ListItemText>
           </Button>
         </div>
       </Drawer>
@@ -421,5 +471,4 @@ const Sidebar = ({ open, testUser }) => {
     </>
   );
 };
-
 export default Sidebar;
