@@ -503,7 +503,7 @@ export default function DataSelection({
                 onClick={handleBack2ButtonClick}
                 startIcon={<KeyboardArrowLeftIcon />}
               >
-                Back2222
+                Back
               </Button>
             </Grid>
           )}
@@ -594,7 +594,7 @@ export default function DataSelection({
                 startIcon={<KeyboardArrowLeftIcon />}
                 onClick={handleBack1ButtonClick}
               >
-                Back1
+                Back
               </Button>
               <Button
                 variant="contained"

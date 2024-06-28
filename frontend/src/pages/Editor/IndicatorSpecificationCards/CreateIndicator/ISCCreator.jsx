@@ -461,6 +461,33 @@ export default function ISCCreator() {
     });
     setActiveStep(activeStep - 1);
   };
+  const handleNextClick = () => {
+    if (userSelectsOnlyVisualization && !userSelectsDataset) {
+      toggleUserSelectsDataset();
+      toggleUserSelectsVisualization();
+      setUserFinalizeSelection(false);
+      setActiveStep(activeStep + 1);
+    } else if (!userSelectsOnlyVisualization) {
+      setUserFinalizeSelection(true);
+      toggleUserSelectsVisualization();
+      setDataState({
+        ...dataState,
+        status: true,
+      });
+      setActiveStep(activeStep + 1);
+    }
+  };
+  const handleButtonSelectVisualization = () => {
+    setUserSelectsOnlyVisualization(true);
+    toggleUserSelectsVisualization();
+    handleMethodSelection("visualization");
+    setActiveStep(activeStep + 1);
+  };
+  const handleButtonSelectData = () => {
+    toggleUserSelectsDataset();
+    handleMethodSelection("dataset");
+    setActiveStep(activeStep + 1);
+  };
 
   return (
     <>
@@ -533,6 +560,7 @@ export default function ISCCreator() {
             stepsInitial={stepsInitial}
             setSteps={setSteps}
             handleBack= {handleBack}
+            userFinalizeSelection= {userFinalizeSelection}
             
           />
           {userCreatesIndicator && (
@@ -578,12 +606,7 @@ export default function ISCCreator() {
                                   alignItems: "center",
                                   cursor: "pointer",
                                 }}
-                                onClick={() => {
-                                  setUserSelectsOnlyVisualization(true);
-                                  toggleUserSelectsVisualization();
-                                  handleMethodSelection("visualization");
-                                  setActiveStep(activeStep + 1);
-                                }}
+                                onClick={handleButtonSelectVisualization}
                               >
                                 <Typography variant="h6" align="center">
                                   Select Visualization
@@ -614,11 +637,7 @@ export default function ISCCreator() {
                                   alignItems: "center",
                                   cursor: "pointer",
                                 }}
-                                onClick={() => {
-                                  toggleUserSelectsDataset();
-                                  handleMethodSelection("dataset");
-                                  setActiveStep(activeStep + 1);
-                                }}
+                                onClick={handleButtonSelectData}
                               >
                                 <Typography variant="h6" align="center">
                                   Select Data
@@ -758,33 +777,14 @@ export default function ISCCreator() {
                           startIcon={<KeyboardArrowLeftIcon />}
                           onClick={handleBack11ButtonClick}
                         >
-                          Back1&&&&
+                          Back
                         </Button>
 
                         <Button
                           endIcon={<KeyboardArrowRightIcon />}
                           variant="contained"
                           disabled={chartSelected.code === ""}
-                          onClick={() => {
-                            if (
-                              userSelectsOnlyVisualization &&
-                              !userSelectsDataset
-                            ) {
-                              toggleUserSelectsDataset();
-                              toggleUserSelectsVisualization();
-                              setUserFinalizeSelection(false);
-                              setActiveStep(activeStep + 1);
-                            }
-                            if (!userSelectsOnlyVisualization) {
-                              setUserFinalizeSelection(true);
-                              toggleUserSelectsVisualization();
-                              setDataState({
-                                ...dataState,
-                                status: true,
-                              });
-                              setActiveStep(activeStep + 1);
-                            }
-                          }}
+                          onClick={handleNextClick}
                         >
                           Next
                         </Button>
@@ -797,7 +797,7 @@ export default function ISCCreator() {
                         toggleEditPanel={toggleEditPanel}
                       />
 
-                      {/* <Grid
+                      <Grid
                         container
                         justifyContent="space-between"
                         sx={{ pb: 2 }}
@@ -805,20 +805,7 @@ export default function ISCCreator() {
                         <Button
                           variant="outlined"
                           startIcon={<KeyboardArrowLeftIcon />}
-                          onClick={() => {
-                            if (userSelectsOnlyVisualization) {
-                              toggleUserSelectsVisualization();
-                              setUserSelectsOnlyVisualization(false);
-                              return;
-                            }
-                            if (
-                              !userSelectsDataset &&
-                              userSelectsVisualization
-                            ) {
-                              toggleUserSelectsDataset();
-                            }
-                            toggleUserSelectsVisualization();
-                          }}
+                          onClick={handleBack11ButtonClick}
                         >
                           Back
                         </Button>
@@ -827,18 +814,11 @@ export default function ISCCreator() {
                           endIcon={<KeyboardArrowRightIcon />}
                           variant="contained"
                           disabled={chartSelected.code === ""}
-                          onClick={() => {
-                            setUserFinalizeSelection(true);
-                            toggleUserSelectsVisualization();
-                            setDataState({
-                              ...dataState,
-                              status: true,
-                            });
-                          }}
+                          onClick={handleNextClick}
                         >
-                          Preview
+                          Next
                         </Button>
-                      </Grid> */}
+                      </Grid>
                     </Grid>
                   )}
                 </Box>
