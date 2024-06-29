@@ -412,7 +412,7 @@ export default function ISCCreator() {
     }
     toggleUserSelectsVisualization();
   };
-  
+
   const handleGoBackToSelectVisualization = () => {
     if (userSelectsOnlyVisualization) {
       toggleUserSelectsVisualization();
@@ -461,21 +461,29 @@ export default function ISCCreator() {
     setActiveStep(activeStep + 1);
   };
   const stepActions = {
+    "1_0": [toggleUserCreatesIndicator],
     "2_1": [handleBack11ButtonClick],
+    "2_0": [handleBack11ButtonClick, toggleUserCreatesIndicator],
     "3_2": [handleGoBackToSelectVisualization],
     "3_1": [handleGoBackToSelectVisualization, handleBack11ButtonClick],
+    "3_0": [handleGoBackToSelectVisualization, handleBack11ButtonClick, toggleUserCreatesIndicator],
     "4_3": [handleGoBackToSelectDataSetGenerationMethod],
     "4_2": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
-    "4_1": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, handleBack11ButtonClick]
+    "4_1": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, handleBack11ButtonClick],
+    "4_0": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, handleBack11ButtonClick, toggleUserCreatesIndicator]
   };
   
   const stepActionsNonVisualization = {
+    "1_0": [toggleUserCreatesIndicator],
     "2_1": [handleGoBackToSelectVisualization],
+    "2_0": [handleGoBackToSelectVisualization, toggleUserCreatesIndicator],
     "3_2": [handleGoBackToSelectDataSetGenerationMethod],
     "3_1": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
+    "3_0": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, toggleUserCreatesIndicator],
     "4_3": [handleBack11ButtonClick],
     "4_2": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod],
-    "4_1": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization]
+    "4_1": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
+    "4_0": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, toggleUserCreatesIndicator]
   };
   
   const handleBack = (index) => {

@@ -270,13 +270,7 @@ const ISCCreatorHeader = ({
                   >
                     <span>
                       <StepButton
-                        onClick={() => {
-                          if (index === 0) {
-                            discardChanges();
-                          } else if (index > 0) {
-                            handleBack(index)();
-                          }
-                        }}
+                        onClick={() => {handleBack(index)()}}
                         disabled={isDisabled}
                       >
                         <StepLabel>{step}</StepLabel>
