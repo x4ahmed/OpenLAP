@@ -412,35 +412,7 @@ export default function ISCCreator() {
     }
     toggleUserSelectsVisualization();
   };
-
-  const handleBack = (index) => {
-    console.log("index", index); 
-    console.log("activeStep", activeStep);
-    return () => {
-      if (activeStep > index && index === 1 && userSelectsOnlyVisualization) {
-        handleBack11ButtonClick();
-      } else if (
-        activeStep > index &&
-        index === 3 &&
-        !userSelectsOnlyVisualization
-      ) {
-        handleBack11ButtonClick();
-      }
-      else if (activeStep > index && index === 2 && userSelectsOnlyVisualization) {
-        handleGoBackToSelectVisualization();
-      }
-      else if (activeStep > index && index === 2 && userSelectsDataset) {
-        handleGoBackToSelectDataSetGenerationMethod();
-      }
-      else if (activeStep > index && index === 3 && userSelectsOnlyVisualization) {
-        handleGoBackToSelectDataSetGenerationMethod();
-      }
-      else if(activeStep === 5 && index === 1){
-        console.log("MANGO");
-      }
-    };
-  };
-
+  
   const handleGoBackToSelectVisualization = () => {
     if (userSelectsOnlyVisualization) {
       toggleUserSelectsVisualization();
@@ -488,6 +460,36 @@ export default function ISCCreator() {
     handleMethodSelection("dataset");
     setActiveStep(activeStep + 1);
   };
+  const stepActions = {
+    "2_1": [handleBack11ButtonClick],
+    "3_2": [handleGoBackToSelectVisualization],
+    "3_1": [handleGoBackToSelectVisualization, handleBack11ButtonClick],
+    "4_3": [handleGoBackToSelectDataSetGenerationMethod],
+    "4_2": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
+    "4_1": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, handleBack11ButtonClick]
+  };
+  
+  const stepActionsNonVisualization = {
+    "2_1": [handleGoBackToSelectVisualization],
+    "3_2": [handleGoBackToSelectDataSetGenerationMethod],
+    "3_1": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
+    "4_3": [handleBack11ButtonClick],
+    "4_2": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod],
+    "4_1": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization]
+  };
+  
+  const handleBack = (index) => {
+    return () => {
+      const actionKey = `${activeStep}_${index}`;
+      const actions = userSelectsOnlyVisualization ? stepActions[actionKey] : stepActionsNonVisualization[actionKey];
+  
+      if (actions) {
+        actions.forEach(action => action());
+        setActiveStep(index);
+      }
+    };
+  };
+  
 
   return (
     <>

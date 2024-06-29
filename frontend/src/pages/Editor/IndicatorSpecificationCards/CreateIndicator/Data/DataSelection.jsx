@@ -474,23 +474,6 @@ export default function DataSelection({
       setActiveStep(activeStep - 1);
     }
   };
-  const handleBackfromDataSelection = (index) => {
-    return () => {
-      if (activeStep > index && index === 2 && userSelectsOnlyVisualization) {
-        handleBack2ButtonClick();
-      } else if (
-        activeStep > index && index === 1 && !userSelectsOnlyVisualization
-      ) {
-        handleBack2ButtonClick();
-      } else if (activeStep > index && index === 3 && userSelectsOnlyVisualization) {
-        handleBack1ButtonClick();
-      } else if (
-        activeStep > index && index === 2 && !userSelectsOnlyVisualization
-      ) {
-        handleBack1ButtonClick();
-      }
-    };
-  };
 
   return (
     <>
