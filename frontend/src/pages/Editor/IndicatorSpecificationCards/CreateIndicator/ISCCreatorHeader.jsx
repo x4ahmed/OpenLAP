@@ -257,7 +257,7 @@ const ISCCreatorHeader = ({
       {/* The implementation of the stepper */}
       <Box sx={{ width: "100%" }}>
         { !userFinalizeSelection &&(
-          <Stepper activeStep={activeStep} alternativeLabel>
+          <Stepper  activeStep={activeStep} alternativeLabel>
             {steps.map((step, index) => {
               const isDisabled = activeStep < index || activeStep === 5;
 
@@ -277,13 +277,7 @@ const ISCCreatorHeader = ({
                   >
                     <span>
                       <StepButton
-                        onClick={() => {
-                          if (index === 0) {
-                            discardChanges();
-                          } else if (index > 0) {
-                            handleBack(index)();
-                          }
-                        }}
+                        onClick={() => {handleBack(index)()}}
                         disabled={isDisabled}
                       >
                         <StepLabel>{step}</StepLabel>
