@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   Box,
   Button,
@@ -694,10 +694,14 @@ export default function DataSelection({
                   <DataGrid
                     apiRef={apiRef}
                     disableColumnResize={false}
-                    columns={dataState.columnData.map((column) => ({
-                      ...column,
-                      minWidth: 150,
-                    }))}
+                    columns={useMemo(
+                      () =>
+                        dataState.columnData.map((column) => ({
+                          ...column,
+                          minWidth: 150,
+                        })),
+                      [dataState.columnData]
+                    )}
                     columnMenuClearIcon={<ClearAllIcon />}
                     cellModesModel={cellModesModel}
                     disableRowSelectionOnClick
@@ -844,7 +848,7 @@ export default function DataSelection({
                       // height: "600px",
                       mb: 2,
                     }}
-                    componentsProps={{
+                    slotProps={{
                       row: {
                         onMouseEnter: handlePopperOpen,
                         onMouseLeave: handlePopperClose,
