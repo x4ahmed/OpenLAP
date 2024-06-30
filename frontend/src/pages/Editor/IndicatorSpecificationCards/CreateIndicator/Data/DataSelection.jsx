@@ -460,6 +460,15 @@ export default function DataSelection({
     });
   }, []);
 
+  const columns = useMemo(
+    () =>
+      dataState.columnData.map((column) => ({
+        ...column,
+        minWidth: 150,
+      })),
+    [dataState.columnData]
+  );
+
   const handleCellModesModelChange = useCallback((newModel) => {
     setCellModesModel(newModel);
   }, []);
@@ -743,14 +752,7 @@ export default function DataSelection({
                   <DataGrid
                     apiRef={apiRef}
                     disableColumnResize={false}
-                    columns={useMemo(
-                      () =>
-                        dataState.columnData.map((column) => ({
-                          ...column,
-                          minWidth: 150,
-                        })),
-                      [dataState.columnData]
-                    )}
+                    columns={columns}
                     columnMenuClearIcon={<ClearAllIcon />}
                     cellModesModel={cellModesModel}
                     disableRowSelectionOnClick
