@@ -65,7 +65,7 @@ const ISCDashboard = () => {
   });
   const [toBeDeleted, setToBeDeleted] = useState([]);
   const [parsedISCData, setParsedISCData] = useState(
-    JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || []
+     []
   );
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -114,18 +114,16 @@ const ISCDashboard = () => {
   // };
 
   useEffect(() => {
-    let ISCDashboard = JSON.parse(
-      localStorage.getItem("openlap-isc-dashboard")
-    );
+    let ISCDashboard = [];
     if (!Boolean(ISCDashboard)) {
       defaultISCData.sort(
         (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
       );
       setParsedISCData(defaultISCData);
-      localStorage.setItem(
-        "openlap-isc-dashboard",
-        JSON.stringify(defaultISCData)
-      );
+      // localStorage.setItem(
+      //   "openlap-isc-dashboard",
+      //   JSON.stringify(defaultISCData)
+      // );
     }
   }, []);
 
@@ -302,17 +300,16 @@ const ISCDashboard = () => {
     reader.onload = async ({ target }) => {
       try {
         const newJson = JSON.parse(target.result);
-        const existingData =
-          JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || [];
+        const existingData = [];
         const mergedData = [...existingData, ...newJson];
         mergedData.sort(
           (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
         );
         setParsedISCData(mergedData);
-        localStorage.setItem(
-          "openlap-isc-dashboard",
-          JSON.stringify(mergedData)
-        );
+        // localStorage.setItem(
+        //   "openlap-isc-dashboard",
+        //   JSON.stringify(mergedData)
+        // );
         setOpenUploadJSONModal(false);
       } catch {
         console.log("Invalid JSON file");
@@ -322,9 +319,7 @@ const ISCDashboard = () => {
   };
 
   const handleDownloadFile = (downloadAll = false) => {
-    const parsedData = JSON.parse(
-      localStorage.getItem("openlap-isc-dashboard")
-    );
+    const parsedData = [];
     const filteredISC = downloadAll
       ? parsedData
       : parsedData.filter((parsedISC) => selected.includes(parsedISC.id));

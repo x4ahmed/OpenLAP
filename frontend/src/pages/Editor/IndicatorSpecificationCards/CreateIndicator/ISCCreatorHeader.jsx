@@ -184,8 +184,7 @@ const ISCCreatorHeader = ({
       JSON.parse(sessionStorage.getItem("chart-series")) || {};
     let currentISCOptions =
       JSON.parse(sessionStorage.getItem("chart-options")) || {};
-    let listOfISCs =
-      JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || [];
+    let listOfISCs = [];
     listOfISCs = listOfISCs.map((item) => {
       if (item.id === currentISC.id) {
         return {
@@ -229,7 +228,7 @@ const ISCCreatorHeader = ({
       dispatch(saveISCIndicator(listOfISCs[listOfISCs.length - 1]));
     }
 
-    localStorage.setItem("openlap-isc-dashboard", JSON.stringify(listOfISCs));
+    //localStorage.setItem("openlap-isc-dashboard", JSON.stringify(listOfISCs));
     sessionStorage.removeItem("chart-options");
     sessionStorage.removeItem("chart-series");
     sessionStorage.removeItem("openlap-isc-data");
