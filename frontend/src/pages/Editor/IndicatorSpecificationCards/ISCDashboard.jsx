@@ -67,7 +67,7 @@ const ISCDashboard = () => {
     lastUpdated: "",
   });
   const [parsedISCData, setParsedISCData] = useState(
-    JSON.parse(localStorage.getItem("openlap-isc-dashboard")) || []
+     []
   );
   const defaultPreviewIndicator = {
     indicatorGoal: "",
@@ -112,18 +112,16 @@ const ISCDashboard = () => {
   };
 
   useEffect(() => {
-    let ISCDashboard = JSON.parse(
-      localStorage.getItem("openlap-isc-dashboard")
-    );
+    let ISCDashboard = [];
     if (!Boolean(ISCDashboard)) {
       defaultISCData.sort(
         (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
       );
       setParsedISCData(defaultISCData);
-      localStorage.setItem(
-        "openlap-isc-dashboard",
-        JSON.stringify(defaultISCData)
-      );
+      // localStorage.setItem(
+      //   "openlap-isc-dashboard",
+      //   JSON.stringify(defaultISCData)
+      // );
     }
   }, []);
 
@@ -278,16 +276,36 @@ const ISCDashboard = () => {
     localStorage.setItem("openlap-isc-dashboard", JSON.stringify(filteredISC));
   };
 
+  const handleDragOver = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+  const handleDragEnter = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+  const handleDrop = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files[0];
+    setFile(droppedFile);
+  };
+
   const handleUploadFile = () => {
     const reader = new FileReader();
     reader.onload = async ({ target }) => {
       try {
-        const json = JSON.parse(target.result);
-        setFile(json);
-        // console.log(json);
-        json.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-        setParsedISCData(json);
-        localStorage.setItem("openlap-isc-dashboard", JSON.stringify(json));
+        const newJson = JSON.parse(target.result);
+        const existingData = [];
+        const mergedData = [...existingData, ...newJson];
+        mergedData.sort(
+          (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+        );
+        setParsedISCData(mergedData);
+        // localStorage.setItem(
+        //   "openlap-isc-dashboard",
+        //   JSON.stringify(mergedData)
+        // );
         setOpenUploadJSONModal(false);
         handleClose2();
       } catch {
@@ -297,11 +315,12 @@ const ISCDashboard = () => {
     reader.readAsText(file);
   };
 
-  const handleDownloadFile = () => {
-    const parsedData = JSON.parse(
-      localStorage.getItem("openlap-isc-dashboard")
-    );
-    const fileData = JSON.stringify(parsedData);
+  const handleDownloadFile = (downloadAll = false) => {
+    const parsedData = [];
+    const filteredISC = downloadAll
+      ? parsedData
+      : parsedData.filter((parsedISC) => selected.includes(parsedISC.id));
+    const fileData = JSON.stringify(filteredISC);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
