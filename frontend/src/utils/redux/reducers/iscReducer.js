@@ -12,6 +12,8 @@ export const MENU_2 = "Menu 2 set";
 export const OPEN_VIS_ACCORDION = "Open/close visualization tab";
 export const OPEN_EDIT_PANEL = "Open/close edit panel";
 export const SAVE_ISC_INDICATOR = "Save ISC indicator";
+export const GET_ALL_SAVED_ISC_INDICATORS_REQUEST = "Request all saved ISC indicators";
+export const GET_ALL_SAVED_ISC_INDICATORS_RESPONSE = "Response all saved ISC indicators";
 
 export const setIndicatorName = (indicatorName) => ({
   type: INDICATOR_NAME,
@@ -69,6 +71,15 @@ export const saveISCIndicator = (iscData) => ({
   iscData,
 });
 
+export const getAllSavedISCIndicatorsRequest = () => ({
+  type: GET_ALL_SAVED_ISC_INDICATORS_REQUEST,
+});
+
+export const getAllSavedISCIndicatorsResponse = (listofIscIndicators) => ({
+  type: GET_ALL_SAVED_ISC_INDICATORS_RESPONSE,
+  listofIscIndicators
+});
+
 const initialState = {
   indicatorName: "",
   visualization: {
@@ -97,7 +108,7 @@ const initialState = {
 //   ]
 // }
 
-export default function editorReducer(state = initialState, action) {
+export default function iscReducer(state = initialState, action) {
   switch (action.type) {
     case SET_DEFAULT:
       return initialState;
@@ -198,6 +209,13 @@ export default function editorReducer(state = initialState, action) {
           ...state,
           listofIscIndicators: [...state.listofIscIndicators, action.iscData],
         };
+        case GET_ALL_SAVED_ISC_INDICATORS_RESPONSE:
+          console.log("listofIscIndicators", action.listofIscIndicators);
+          return {
+            ...state,
+            listofIscIndicators: [],
+            listofIscIndicators: action.listofIscIndicators,
+          };
     default:
       return state;
   }

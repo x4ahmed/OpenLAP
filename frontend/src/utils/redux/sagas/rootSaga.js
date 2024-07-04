@@ -74,8 +74,8 @@ import {
   GET_ANALYSIS_METHOD_INPUTSML,
   GET_ANALYSIS_METHOD_OUTPUTSML
 } from "../reducers/multiLevelEditor";
-import { SAVE_ISC_INDICATOR } from '../reducers/iscReducer';
-import { handleSaveISCIndicator } from '../sagas/handler/iscCreator';
+import { SAVE_ISC_INDICATOR, GET_ALL_SAVED_ISC_INDICATORS_REQUEST } from '../reducers/iscReducer';
+import { handleSaveISCIndicator, handleGetAllSavedISCIndicators } from '../sagas/handler/iscCreator';
 
 export function* watcherSaga() {
   yield takeLatest(GET_USER_QUESTIONS_AND_INDICATORS, handleGetUserQuestionsAndIndicators);
@@ -118,4 +118,5 @@ export function* watcherSaga() {
 
   // ISC Editor
   yield takeLatest(SAVE_ISC_INDICATOR, handleSaveISCIndicator);
+  yield takeLatest(GET_ALL_SAVED_ISC_INDICATORS_REQUEST, handleGetAllSavedISCIndicators);
 }

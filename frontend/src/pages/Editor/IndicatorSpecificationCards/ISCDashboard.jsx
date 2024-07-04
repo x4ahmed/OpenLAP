@@ -51,6 +51,8 @@ import defaultISCData from "../../../utils/data/defaultISCData";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 import { red } from "@mui/material/colors";
+import { useSelector } from "react-redux";
+import { getAllSavedISCIndicatorsRequest } from "../../../utils/redux/reducers/iscReducer.js";
 
 const ISCDashboard = () => {
   const dispatch = useDispatch();
@@ -64,9 +66,6 @@ const ISCDashboard = () => {
     indicatorData: null,
   });
   const [toBeDeleted, setToBeDeleted] = useState([]);
-  const [parsedISCData, setParsedISCData] = useState(
-     []
-  );
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const defaultPreviewIndicator = {
@@ -95,6 +94,10 @@ const ISCDashboard = () => {
   const [deleteSelected, setDeleteSelected] = useState(false);
   const open = Boolean(anchorEl);
 
+  const listofIscIndicators = useSelector(state => state.iscReducer.listofIscIndicators);
+
+  const [parsedISCData, setParsedISCData] = useState([]);
+
   // const [anchorEl2, setAnchorEl2] = useState(null);
   // const open2 = Boolean(anchorEl2);
 
@@ -114,18 +117,18 @@ const ISCDashboard = () => {
   // };
 
   useEffect(() => {
-    let ISCDashboard = [];
-    if (!Boolean(ISCDashboard)) {
-      defaultISCData.sort(
-        (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
-      );
-      setParsedISCData(defaultISCData);
-      // localStorage.setItem(
-      //   "openlap-isc-dashboard",
-      //   JSON.stringify(defaultISCData)
-      // );
-    }
-  }, []);
+    dispatch(getAllSavedISCIndicatorsRequest());
+    // if (!Boolean(ISCDashboard)) {
+    //   defaultISCData.sort(
+    //     (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+    //   );
+    //   setParsedISCData(defaultISCData);
+    //   // localStorage.setItem(
+    //   //   "openlap-isc-dashboard",
+    //   //   JSON.stringify(defaultISCData)
+    //   // );
+    // }
+  }, [dispatch]);
 
   const handleCreateIndicator = (forceCreate = false) => {
     const iscData = JSON.parse(sessionStorage.getItem("openlap-isc-data"));
@@ -300,7 +303,7 @@ const ISCDashboard = () => {
     reader.onload = async ({ target }) => {
       try {
         const newJson = JSON.parse(target.result);
-        const existingData = [];
+        const existingData = listofIscIndicators;
         const mergedData = [...existingData, ...newJson];
         mergedData.sort(
           (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
@@ -526,8 +529,10 @@ const ISCDashboard = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    setRows(parsedISCData);
-  }, [parsedISCData]);
+    console.log("set rows", listofIscIndicators);
+    setParsedISCData(listofIscIndicators);
+    setRows(listofIscIndicators);
+  }, [listofIscIndicators]);
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -653,7 +658,7 @@ const ISCDashboard = () => {
                     (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
                   )
                   .map((row, index) => {
-                    const isItemSelected = isSelected(row.id);
+                    const isItemSelected = isSelected(row?.id);
                     return (
                       <TableRow
                         hover
@@ -672,16 +677,16 @@ const ISCDashboard = () => {
                               }}
                               selected={isItemSelected}
                               aria-checked={isItemSelected}
-                              onClick={(event) => handleRowClick(event, row.id)}
+                              onClick={(event) => handleRowClick(event, row?.id)}
                             />
                             <Box display="flex" flexDirection="column">
                               <Typography variant="body1" gutterBottom>
-                                {row.indicatorName}
+                                {row?.indicatorName}
                               </Typography>
                               <Typography variant="body2">
                                 <i>
                                   Last updated:{" "}
-                                  {getLastUpdateDate(row.lastUpdated)}
+                                  {getLastUpdateDate(row?.lastUpdated)}
                                 </i>
                               </Typography>
                             </Box>
@@ -689,7 +694,7 @@ const ISCDashboard = () => {
                         </TableCell>
                         <TableCell align="right" padding="none">
                           <Typography variant="body2" gutterBottom>
-                            {row.chartName}
+                            {row?.chartName}
                           </Typography>
                         </TableCell>
                         <TableCell>

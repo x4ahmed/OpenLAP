@@ -215,7 +215,7 @@ const ISCCreatorHeader = ({
         chartOptions: currentISCOptions,
         chartSeries: currentISCSeries,
         chartType: currentISC.chartType,
-        id: uuidv4(),
+        //id: uuidv4(),
         indicatorData: currentISC.indicatorData,
         indicatorGoal: currentISC.indicatorGoal,
         indicatorGoalText: currentISC.indicatorGoalText,

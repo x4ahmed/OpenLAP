@@ -61,9 +61,20 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     }
 
     @Override
-    public List<ISCIndicator> getISCIndicatorsForUser(String userId, HttpServletRequest request) {
+    public List<ISCIndicator> getISCIndicatorsForUser(HttpServletRequest request) {
         try {
-            return iscIndicatorRepo.findByCreatedBy(userId);
+            List<ISCIndicator> iscIndicators = iscIndicatorRepo.findByCreatedBy(request.getUserPrincipal().getName());
+            OpenLapUser openlapUser = em.find(OpenLapUser.class, request.getUserPrincipal().getName());
+            if(iscIndicators != null){
+                iscIndicators.forEach(iscIndicator -> {
+                    iscIndicator.setCreatedBy(openlapUser);
+                });
+
+                iscIndicators.forEach(iscIndicator -> {
+                    iscIndicator.getCreatedBy().setPassword(null);
+                });
+            }
+            return iscIndicators;
         } catch (Exception e) {
             e.printStackTrace();
         }
