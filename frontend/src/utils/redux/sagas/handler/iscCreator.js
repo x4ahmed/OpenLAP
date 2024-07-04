@@ -27,7 +27,7 @@ export function* handleGetAllSavedISCIndicators(action) {
       parsedJson: JSON.parse(item.iscJsonString)
     }));
     listofIscIndicators.map((item) => {
-      item.parsedJson.Id = item.id;});
+      item.parsedJson.id = item.id;});
 
     let ISCDashboard = [];
     ISCDashboard = listofIscIndicators.map((item) => { return item.parsedJson; });

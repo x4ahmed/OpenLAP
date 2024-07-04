@@ -322,10 +322,12 @@ const ISCDashboard = () => {
   };
 
   const handleDownloadFile = (downloadAll = false) => {
-    const parsedData = [];
+    const parsedData = listofIscIndicators;
+    console.log("Parsed Indicators", parsedData);
     const filteredISC = downloadAll
       ? parsedData
       : parsedData.filter((parsedISC) => selected.includes(parsedISC.id));
+      console.log("Filtered Indicators", filteredISC);
     const fileData = JSON.stringify(filteredISC);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);

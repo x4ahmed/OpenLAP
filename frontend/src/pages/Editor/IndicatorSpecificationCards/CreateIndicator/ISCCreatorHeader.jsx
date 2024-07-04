@@ -202,12 +202,10 @@ const ISCCreatorHeader = ({
           lastUpdated: new Date(),
         };
       }
+      
+      dispatch(saveISCIndicator(item));
       return item;
     });
-    console.log("Dispatching existing saveISCIndicator");
-    var dispatchedItem = listOfISCs.find((item) => item.id === currentISC.id);
-    console.log("dispatchedItem", dispatchedItem);
-    dispatch(saveISCIndicator(dispatchedItem));
 
     if (!listOfISCs.some((item) => item.id === currentISC.id)) {
       listOfISCs.push({
@@ -215,7 +213,6 @@ const ISCCreatorHeader = ({
         chartOptions: currentISCOptions,
         chartSeries: currentISCSeries,
         chartType: currentISC.chartType,
-        //id: uuidv4(),
         indicatorData: currentISC.indicatorData,
         indicatorGoal: currentISC.indicatorGoal,
         indicatorGoalText: currentISC.indicatorGoalText,
