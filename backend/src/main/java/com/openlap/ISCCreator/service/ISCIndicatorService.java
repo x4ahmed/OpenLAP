@@ -12,7 +12,7 @@ public interface ISCIndicatorService {
 
     public boolean saveISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request);
 
-    public boolean deleteISCIndicator(String iscIndicatorId, HttpServletRequest request);
+    public boolean deleteISCIndicator(List<ISCIndicatorDTO> iscIndicatorIds, HttpServletRequest request);
 
     public boolean updateISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request);
 

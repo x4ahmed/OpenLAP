@@ -38,9 +38,12 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     }
 
     @Override
-    public boolean deleteISCIndicator(String iscIndicatorId, HttpServletRequest request) {
+    public boolean deleteISCIndicator(List<ISCIndicatorDTO> iscIndicatorIds, HttpServletRequest request) {
         try {
-            iscIndicatorRepo.deleteById(iscIndicatorId);
+            iscIndicatorIds.forEach(iscIndicatorId -> {
+                if(iscIndicatorRepo.existsById(iscIndicatorId.getId()))
+                    iscIndicatorRepo.deleteById(iscIndicatorId.getId());
+            });
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,6 +55,13 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     @Override
     public boolean updateISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request) {
         try {
+            OpenLapUser openlapUser = em.find(OpenLapUser.class, request.getUserPrincipal().getName());
+            ISCIndicator iscIndicator = new ISCIndicator(iscIndicatorDTO.getIscJsonString(), openlapUser, iscIndicatorDTO.getId());
+            if(iscIndicatorRepo.existsById(iscIndicator.getId())){
+                iscIndicatorRepo.deleteById(iscIndicator.getId());
+                iscIndicatorRepo.save(iscIndicator);
+            }
+            iscIndicatorRepo.save(iscIndicator);
             return true;
         }
         catch (Exception e) {

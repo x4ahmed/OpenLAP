@@ -52,7 +52,7 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 import { red } from "@mui/material/colors";
 import { useSelector } from "react-redux";
-import { getAllSavedISCIndicatorsRequest } from "../../../utils/redux/reducers/iscReducer.js";
+import { getAllSavedISCIndicatorsRequest, deleteISCIndicator } from "../../../utils/redux/reducers/iscReducer.js";
 
 const ISCDashboard = () => {
   const dispatch = useDispatch();
@@ -280,7 +280,8 @@ const ISCDashboard = () => {
     setParsedISCData(filteredISC);
     setSelected([]);
     handleClose();
-    localStorage.setItem("openlap-isc-dashboard", JSON.stringify(filteredISC));
+    let listofIscIndicators = selected.map((id) => { return id; });
+    dispatch(deleteISCIndicator(listofIscIndicators))
   };
 
   const handleDragOver = (event) => {

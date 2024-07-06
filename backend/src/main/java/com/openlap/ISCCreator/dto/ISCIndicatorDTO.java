@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ISCIndicatorDTO {
+    private String id;
     private String iscJsonString;
 
     // Getters and Setters
@@ -14,8 +15,9 @@ public class ISCIndicatorDTO {
     public ISCIndicatorDTO() {
     }
 
-    public ISCIndicatorDTO(String iscJsonString) {
+    public ISCIndicatorDTO(String iscJsonString, String id) {
         this.iscJsonString = iscJsonString;
+        this.id = id;
     }
 
     public String getIscJsonString() {
@@ -24,6 +26,14 @@ public class ISCIndicatorDTO {
 
     public void setIscJsonString(String iscJsonString) {
         this.iscJsonString = iscJsonString;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

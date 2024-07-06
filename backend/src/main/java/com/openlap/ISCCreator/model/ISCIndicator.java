@@ -35,6 +35,12 @@ public class ISCIndicator {
         this.createdBy = createdBy;
     }
 
+    public ISCIndicator(String iscJsonString, OpenLapUser createdBy, String id) {
+        this.iscJsonString = iscJsonString;
+        this.createdBy = createdBy;
+        this.id = id;
+    }
+
     public String getId() {
         return id;
     }

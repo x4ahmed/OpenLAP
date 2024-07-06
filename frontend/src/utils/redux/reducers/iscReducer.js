@@ -14,6 +14,8 @@ export const OPEN_EDIT_PANEL = "Open/close edit panel";
 export const SAVE_ISC_INDICATOR = "Save ISC indicator";
 export const GET_ALL_SAVED_ISC_INDICATORS_REQUEST = "Request all saved ISC indicators";
 export const GET_ALL_SAVED_ISC_INDICATORS_RESPONSE = "Response all saved ISC indicators";
+export const EDIT_EXISTING_ISC_INDICATOR = "Edit existing ISC indicator";
+export const DELETE_ISC_INDICATOR = "Delete ISC indicator";
 
 export const setIndicatorName = (indicatorName) => ({
   type: INDICATOR_NAME,
@@ -78,6 +80,16 @@ export const getAllSavedISCIndicatorsRequest = () => ({
 export const getAllSavedISCIndicatorsResponse = (listofIscIndicators) => ({
   type: GET_ALL_SAVED_ISC_INDICATORS_RESPONSE,
   listofIscIndicators
+});
+
+export const editExistingISCIndicator = (iscIndicator) => ({
+  type: EDIT_EXISTING_ISC_INDICATOR,
+  iscIndicator,
+});
+
+export const deleteISCIndicator = (listOfIscIndicators) => ({
+  type: DELETE_ISC_INDICATOR,
+  listOfIscIndicators,
 });
 
 const initialState = {

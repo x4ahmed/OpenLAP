@@ -30,7 +30,8 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import goalList from "../../../../utils/data/goalList.js";
 import { useSnackbar } from "notistack";
 import SmartDisplayIcon from "@mui/icons-material/SmartDisplay";
-import { saveISCIndicator } from "../../../../utils/redux/reducers/iscReducer.js";
+import { saveISCIndicator, editExistingISCIndicator } from "../../../../utils/redux/reducers/iscReducer.js";
+import { useSelector } from "react-redux";
 
 const filter = createFilterOptions();
 
@@ -51,6 +52,7 @@ const ISCCreatorHeader = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
+  const listofIscIndicators = useSelector(state => state.iscReducer.listofIscIndicators);
 
   function sortGoalList(goalList) {
     return goalList.sort((a, b) => {
@@ -184,28 +186,7 @@ const ISCCreatorHeader = ({
       JSON.parse(sessionStorage.getItem("chart-series")) || {};
     let currentISCOptions =
       JSON.parse(sessionStorage.getItem("chart-options")) || {};
-    let listOfISCs = [];
-    listOfISCs = listOfISCs.map((item) => {
-      if (item.id === currentISC.id) {
-        return {
-          ...item,
-          chartName: currentISC.chartType.name,
-          chartOptions: currentISCOptions,
-          chartType: currentISC.chartType,
-          chartSeries: currentISCSeries,
-          indicatorData: currentISC.indicatorData,
-          indicatorGoal: currentISC.indicatorGoal,
-          indicatorGoalText: currentISC.indicatorGoalText,
-          indicatorName: currentISC.indicatorName,
-          indicatorQuestion: currentISC.indicatorQuestion,
-          indicatorDataArray: currentISC.indicatorDataArray,
-          lastUpdated: new Date(),
-        };
-      }
-      
-      dispatch(saveISCIndicator(item));
-      return item;
-    });
+    let listOfISCs = listofIscIndicators || [];
 
     if (!listOfISCs.some((item) => item.id === currentISC.id)) {
       listOfISCs.push({
@@ -221,8 +202,29 @@ const ISCCreatorHeader = ({
         indicatorDataArray: currentISC.indicatorDataArray,
         lastUpdated: new Date(),
       });
-      console.log("Dispatching saveISCIndicator");
       dispatch(saveISCIndicator(listOfISCs[listOfISCs.length - 1]));
+    }
+    else{
+      listOfISCs = listOfISCs.map((item) => {
+        if (item.id === currentISC.id) {
+          return {
+            ...item,
+            chartName: currentISC.chartType.name,
+            chartOptions: currentISCOptions,
+            chartType: currentISC.chartType,
+            chartSeries: currentISCSeries,
+            indicatorData: currentISC.indicatorData,
+            indicatorGoal: currentISC.indicatorGoal,
+            indicatorGoalText: currentISC.indicatorGoalText,
+            indicatorName: currentISC.indicatorName,
+            indicatorQuestion: currentISC.indicatorQuestion,
+            indicatorDataArray: currentISC.indicatorDataArray,
+            lastUpdated: new Date(),
+          };
+        }
+        return item;
+      });
+      dispatch(editExistingISCIndicator(listOfISCs.filter((item) => item.id === currentISC.id)[0]));
     }
 
     //localStorage.setItem("openlap-isc-dashboard", JSON.stringify(listOfISCs));
