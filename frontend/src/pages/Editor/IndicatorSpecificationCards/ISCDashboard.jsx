@@ -280,8 +280,14 @@ const ISCDashboard = () => {
     setParsedISCData(filteredISC);
     setSelected([]);
     handleClose();
-    let listofIscIndicators = selected.map((id) => { return id; });
-    dispatch(deleteISCIndicator(listofIscIndicators))
+    let listofIscIndicators = selected.map((id) => {
+      return id;
+    });
+
+    if (listofIscIndicators.length === 0)
+      listofIscIndicators.push(toBeDeleted.id);
+
+    dispatch(deleteISCIndicator(listofIscIndicators));
   };
 
   const handleDragOver = (event) => {
