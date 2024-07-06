@@ -17,4 +17,6 @@ public interface ISCIndicatorService {
     public boolean updateISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request);
 
     public List<ISCIndicator> getISCIndicatorsForUser(HttpServletRequest request);
+
+    public boolean importBulkISCIndicators(List<ISCIndicatorDTO> iscIndicatorDTOs, HttpServletRequest request);
 }

@@ -16,6 +16,7 @@ export const GET_ALL_SAVED_ISC_INDICATORS_REQUEST = "Request all saved ISC indic
 export const GET_ALL_SAVED_ISC_INDICATORS_RESPONSE = "Response all saved ISC indicators";
 export const EDIT_EXISTING_ISC_INDICATOR = "Edit existing ISC indicator";
 export const DELETE_ISC_INDICATOR = "Delete ISC indicator";
+export const IMPORT_BULK_ISC_INDICATORS = "Import bulk ISC indicators";
 
 export const setIndicatorName = (indicatorName) => ({
   type: INDICATOR_NAME,
@@ -90,6 +91,11 @@ export const editExistingISCIndicator = (iscIndicator) => ({
 export const deleteISCIndicator = (listOfIscIndicators) => ({
   type: DELETE_ISC_INDICATOR,
   listOfIscIndicators,
+});
+
+export const importBulkISCIndicators = (iscIndicators) => ({
+  type: IMPORT_BULK_ISC_INDICATORS,
+  iscIndicators,
 });
 
 const initialState = {
@@ -222,7 +228,6 @@ export default function iscReducer(state = initialState, action) {
           listofIscIndicators: [...state.listofIscIndicators, action.iscData],
         };
         case GET_ALL_SAVED_ISC_INDICATORS_RESPONSE:
-          console.log("listofIscIndicators", action.listofIscIndicators);
           return {
             ...state,
             listofIscIndicators: [],

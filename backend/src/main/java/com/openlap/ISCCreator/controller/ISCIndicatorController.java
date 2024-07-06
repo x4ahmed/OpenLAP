@@ -49,4 +49,13 @@ public class ISCIndicatorController {
         return iscIndicatorService.deleteISCIndicator(iscIndicatorIds, request);
     }
 
+    @PostMapping("/ImportBulkISCIndicators")
+    @ResponseBody
+    public boolean ImportBulkISCIndicators(@RequestBody ArrayList<ISCIndicatorDTO> iscIndicatorDTOs, HttpServletRequest request) {
+        if(iscIndicatorDTOs == null || iscIndicatorDTOs.isEmpty())
+            return false;
+
+        return iscIndicatorService.importBulkISCIndicators(iscIndicatorDTOs, request);
+    }
+
 }

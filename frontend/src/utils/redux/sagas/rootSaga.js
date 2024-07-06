@@ -77,12 +77,14 @@ import {
 import { SAVE_ISC_INDICATOR, 
   GET_ALL_SAVED_ISC_INDICATORS_REQUEST, 
   EDIT_EXISTING_ISC_INDICATOR,
-  DELETE_ISC_INDICATOR
+  DELETE_ISC_INDICATOR,
+  IMPORT_BULK_ISC_INDICATORS
  } from '../reducers/iscReducer';
 import { handleSaveISCIndicator, 
   handleGetAllSavedISCIndicators, 
   handleEditISCIndicator,
-  handleDeleteISCIndicator
+  handleDeleteISCIndicator,
+  handleImportBulkISCIndicators
  } from '../sagas/handler/iscCreator';
 
 export function* watcherSaga() {
@@ -129,5 +131,6 @@ export function* watcherSaga() {
   yield takeLatest(GET_ALL_SAVED_ISC_INDICATORS_REQUEST, handleGetAllSavedISCIndicators);
   yield takeLatest(EDIT_EXISTING_ISC_INDICATOR, handleEditISCIndicator);
   yield takeLatest(DELETE_ISC_INDICATOR, handleDeleteISCIndicator);
+  yield takeLatest(IMPORT_BULK_ISC_INDICATORS, handleImportBulkISCIndicators);
 
 }

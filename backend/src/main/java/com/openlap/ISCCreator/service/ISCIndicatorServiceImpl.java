@@ -23,7 +23,6 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     EntityManager em = factory.createEntityManager();
 
 
-
     @Override
     public boolean saveISCIndicator(ISCIndicatorDTO iscIndicatorDTO, HttpServletRequest request) {
         try {
@@ -41,13 +40,13 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
     public boolean deleteISCIndicator(List<ISCIndicatorDTO> iscIndicatorIds, HttpServletRequest request) {
         try {
             iscIndicatorIds.forEach(iscIndicatorId -> {
-                if(iscIndicatorRepo.existsById(iscIndicatorId.getId()))
+                if (iscIndicatorRepo.existsById(iscIndicatorId.getId()))
                     iscIndicatorRepo.deleteById(iscIndicatorId.getId());
             });
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-        return false;
+            return false;
 
         }
     }
@@ -57,14 +56,13 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
         try {
             OpenLapUser openlapUser = em.find(OpenLapUser.class, request.getUserPrincipal().getName());
             ISCIndicator iscIndicator = new ISCIndicator(iscIndicatorDTO.getIscJsonString(), openlapUser, iscIndicatorDTO.getId());
-            if(iscIndicatorRepo.existsById(iscIndicator.getId())){
+            if (iscIndicatorRepo.existsById(iscIndicator.getId())) {
                 iscIndicatorRepo.deleteById(iscIndicator.getId());
                 iscIndicatorRepo.save(iscIndicator);
             }
             iscIndicatorRepo.save(iscIndicator);
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -75,7 +73,7 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
         try {
             List<ISCIndicator> iscIndicators = iscIndicatorRepo.findByCreatedBy(request.getUserPrincipal().getName());
             OpenLapUser openlapUser = em.find(OpenLapUser.class, request.getUserPrincipal().getName());
-            if(iscIndicators != null){
+            if (iscIndicators != null) {
                 iscIndicators.forEach(iscIndicator -> {
                     iscIndicator.setCreatedBy(openlapUser);
                 });
@@ -89,5 +87,20 @@ public class ISCIndicatorServiceImpl implements ISCIndicatorService {
             e.printStackTrace();
         }
         return List.of();
+    }
+
+    @Override
+    public boolean importBulkISCIndicators(List<ISCIndicatorDTO> iscIndicatorDTOs, HttpServletRequest request) {
+        try {
+            OpenLapUser openlapUser = em.find(OpenLapUser.class, request.getUserPrincipal().getName());
+            iscIndicatorDTOs.forEach(iscIndicatorDTO -> {
+                ISCIndicator iscIndicator = new ISCIndicator(iscIndicatorDTO.getIscJsonString(), openlapUser);
+                iscIndicatorRepo.save(iscIndicator);
+            });
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

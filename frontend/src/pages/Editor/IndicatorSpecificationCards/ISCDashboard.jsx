@@ -52,7 +52,7 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 import { red } from "@mui/material/colors";
 import { useSelector } from "react-redux";
-import { getAllSavedISCIndicatorsRequest, deleteISCIndicator } from "../../../utils/redux/reducers/iscReducer.js";
+import { getAllSavedISCIndicatorsRequest, deleteISCIndicator, importBulkISCIndicators } from "../../../utils/redux/reducers/iscReducer.js";
 
 const ISCDashboard = () => {
   const dispatch = useDispatch();
@@ -215,7 +215,6 @@ const ISCDashboard = () => {
       tempParams.chartOptions,
       tempParams.indicatorData
     );
-    console.log(tempParams.chartOptions);
     let darkMode = JSON.parse(sessionStorage.getItem("openlap-settings"))
       .darkMode
       ? "#ffffff"
@@ -321,6 +320,7 @@ const ISCDashboard = () => {
         //   JSON.stringify(mergedData)
         // );
         setOpenUploadJSONModal(false);
+        dispatch(importBulkISCIndicators(newJson));
       } catch {
         console.log("Invalid JSON file");
       }
@@ -330,11 +330,9 @@ const ISCDashboard = () => {
 
   const handleDownloadFile = (downloadAll = false) => {
     const parsedData = listofIscIndicators;
-    console.log("Parsed Indicators", parsedData);
     const filteredISC = downloadAll
       ? parsedData
       : parsedData.filter((parsedISC) => selected.includes(parsedISC.id));
-      console.log("Filtered Indicators", filteredISC);
     const fileData = JSON.stringify(filteredISC);
     const blob = new Blob([fileData], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -538,7 +536,6 @@ const ISCDashboard = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    console.log("set rows", listofIscIndicators);
     setParsedISCData(listofIscIndicators);
     setRows(listofIscIndicators);
   }, [listofIscIndicators]);
