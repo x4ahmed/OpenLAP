@@ -138,11 +138,11 @@ const ISCDashboard = () => {
       let chartSelected = iscData.chartType?.code;
       let dataStateRowData = iscData.indicatorData?.rowData;
       let condition =
-        indicatorName !== "" ||
-        indicatorQuestion !== "" ||
-        indicatorGoalText !== "" ||
-        chartSelected !== "" ||
-        dataStateRowData.length > 0;
+        (indicatorName && indicatorName !== "") ||
+        (indicatorQuestion && indicatorQuestion !== "") ||
+        (indicatorGoalText && indicatorGoalText !== "") ||
+        (chartSelected && chartSelected !== "") ||
+        (dataStateRowData && dataStateRowData.length > 0);
       if (condition) {
         setOnProgressDialog(true);
         return;
