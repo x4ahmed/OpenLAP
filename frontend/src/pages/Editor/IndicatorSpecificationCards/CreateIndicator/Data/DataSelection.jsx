@@ -1099,7 +1099,7 @@ export default function DataSelection({
                     error={error}
                     helperText={
                       error
-                        ? "Invalid entry: system only accepts entries greater than 1"
+                        ? "Invalid entry: system only accepts entries greater than 0"
                         : ""
                     }
                     InputProps={{
