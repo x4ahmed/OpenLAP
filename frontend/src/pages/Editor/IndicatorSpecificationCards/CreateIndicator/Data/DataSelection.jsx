@@ -688,16 +688,15 @@ export default function DataSelection({
                             arrow
                             title={
                               <Typography variant="body2" sx={{ p: 1 }}>
-                                Delete Dataset
+                                More options
                               </Typography>
                             }
                           >
-                            <IconButton aria-label="Example">
-                            <DeleteIcon
-                              onClick={() => setOpenDeleteModal(true)}
-                              fontSize="small"
-                              color="error"
-                            ></DeleteIcon>
+                            <IconButton
+                              color="primary"
+                              onClick={handleClickDataTableMenu}
+                            >
+                              <MoreVertIcon />
                             </IconButton>
 
                             {/* <IconButton
@@ -708,7 +707,7 @@ export default function DataSelection({
                             </IconButton> */}
                           </Tooltip>
 
-                          {/* <Menu
+                          <Menu
                             anchorEl={anchorElDataTableMenu}
                             open={openDataTableMenu}
                             onClose={handleCloseDataTableMenu}
@@ -723,14 +722,13 @@ export default function DataSelection({
                             }}
                           >
                            
-                            fontSize="small" color="error" />
                             <MenuItem onClick={() => setOpenDeleteModal(true)}>
                               <ListItemIcon>
                                 <DeleteIcon fontSize="small" color="error" />
                               </ListItemIcon>
-                              <ListItemText>JULE</ListItemText>
+                              <ListItemText>Delete dataset</ListItemText>
                             </MenuItem>
-                          </Menu> */}
+                          </Menu>
                         </Grid>
                       </Grid>
                     </Grid>
