@@ -27,6 +27,7 @@ import {
   Typography,
   Popper,
   Fade,
+  Autocomplete,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -95,7 +96,16 @@ export default function DataSelection({
   ];
 
   const [loading, setLoading] = useState(false);
+  const [indicatorDataArray, setIndicatorDataArray] = useState([]);
 
+  useEffect(() => {
+    const storedData = JSON.parse(sessionStorage.getItem("openlap-isc-data"));
+    if (storedData && storedData.indicatorDataArray) {
+      const values = storedData.indicatorDataArray.map(item => item.value);
+      setIndicatorDataArray(values);
+    }
+  }, []);
+  
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -1045,18 +1055,28 @@ export default function DataSelection({
             <Typography sx={{ pb: 2, mt: -3 }}>
               How would you like to name the column?
             </Typography>
-            <TextField
-              autoFocus
-              error={columnNameExists.status}
-              helperText={columnNameExists.message}
-              fullWidth
-              label="Column name"
-              value={columnName}
-              InputLabelProps={{
-                shrink: true,
+            <Autocomplete
+              freeSolo
+              options={indicatorDataArray}
+              onChange={(event, newValue) => {
+                setColumnName(newValue || '');
               }}
-              onChange={(e) => setColumnName(e.target.value)}
-              variant="outlined"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  autoFocus
+                  error={columnNameExists.status}
+                  helperText={columnNameExists.message}
+                  fullWidth
+                  label="Column name"
+                  value={columnName}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={(e) => setColumnName(e.target.value)}
+                  variant="outlined"
+                />
+              )}
             />
             <Grid container>
               <Grid item xs={12}>
@@ -1407,7 +1427,11 @@ export default function DataSelection({
   );
 }
 
-const CSVUploader = ({ handlePopulateDataAndCloseModal, setActiveStep, activeStep }) => {
+const CSVUploader = ({
+  handlePopulateDataAndCloseModal,
+  setActiveStep,
+  activeStep,
+}) => {
   const [file, setFile] = useState({ name: "" });
 
   const handleDragOver = (event) => {
