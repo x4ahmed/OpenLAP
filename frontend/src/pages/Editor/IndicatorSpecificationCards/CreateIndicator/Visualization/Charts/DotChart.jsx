@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Fade, Grid } from "@mui/material";
+import { Collapse, TextField, Select, MenuItem, Box, Button, Fade, Grid, ToggleButtonGroup, ToggleButton, Paper } from "@mui/material";
 import Chart from "react-apexcharts";
 import { Edit as EditIcon } from "@mui/icons-material";
 
@@ -12,8 +12,13 @@ import {
   extractProperties,
 } from "./utils/functions.js";
 import { v4 as uuidv4 } from "uuid";
+import { SketchPicker } from 'react-color';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
-export default function DotChart({
+export default function LineChart({
   openEditor,
   toggleEditPanel,
   dataState: { rowData, columnData },
@@ -24,6 +29,41 @@ export default function DotChart({
 }) {
   let chartType = "scatter";
   let allowedMultipleEnties = true;
+  
+  const [value, setValue] = useState("1")
+  const [openSettings, setOpenSettings] = useState(false);
+  const [showColors, setShowColors] = useState(false);
+  const [showLabels, setShowLabels] = useState(false);
+  const [showSeries, setShowSeries] = useState(false);
+  const [defaultCategorical,setDefaultCategorical]=useState(true)
+  const [defaultNumerical,setDefaultNumerical]=useState(true)
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [activeCategory, setActiveCategory] = useState(null);
+
+
+  const toggleSettings = () => setOpenSettings(!openSettings);
+
+  const toggleLabels = () => {
+    setShowLabels(!showLabels);
+    setShowSeries(false);
+    setShowColors(false);
+  };
+
+  const toggleSeries = () => {
+    setShowSeries(!showSeries);
+    setShowLabels(false);
+    setShowColors(false);
+  };
+
+
+  const toggleColors = () => {
+    setShowColors(!showColors);
+    setShowLabels(false);
+    setShowSeries(false);
+  };
+
+  const [selectedColor, setSelectedColor] = useState('#00FF00');
+  const [activeSeries, setActiveSeries] = useState(null);
 
   const [series, setSeries] = useState([
     {
@@ -42,12 +82,41 @@ export default function DotChart({
         ? "#ffffff"
         : "#000000", // TODO: Need to find a way to change the legend color dynamically
     },
+   colors: [ 
+      "#33b2df",
+      "#546E7A",
+      "#d4526e",
+      "#13d8aa",
+      "#A5978B",
+      "#2b908f",
+      "#f9a3a4",
+      "#90ee7e",
+      "#f48024",
+      "#69d2e7"
+      ],
+    stroke: {
+      width: 5,
+      curve: 'smooth'
+    },
     xaxis: {
       name: "", // columnName of Datagrid
+      title: {
+        text: ""
+      },
       categories: ["Category 1", "Category 2", "Category 3"],
       convertedCatToNumeric: true,
       field: "categories", // Custom property, field of DataGrid
       unique: false, // Custom property
+    },
+    yaxis:
+    {
+      title:
+      {
+        text: ""
+      }
+    },
+    title: {
+      text: ""
     },
     default: true,
     legend: {
@@ -86,6 +155,17 @@ export default function DotChart({
   ];
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState(defaultColumn);
+
+  useEffect(()=>{
+    setDefaultCategorical(false);
+    setDefaultNumerical(false);
+  }, [])
+
+  useEffect(()=>{
+    return ()=>{
+    setDefaultCategorical(true);
+    setDefaultNumerical(true);
+  }}, [])
 
   useEffect(() => {
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
@@ -126,9 +206,8 @@ export default function DotChart({
               },
               xaxis: {
                 ...prevOptions.xaxis,
-                name: `${tempOptionsHeaderName}${
-                  tempOptionsUnique ? " (Unique)" : ""
-                }`,
+                name: `${tempOptionsHeaderName}${tempOptionsUnique ? " (Unique)" : ""
+                  }`,
                 field: tempOptionsField,
                 categories: tempOptionsUnique
                   ? uniqueColumnDataArray
@@ -217,6 +296,7 @@ export default function DotChart({
     rowData,
     columnData,
     JSON.parse(sessionStorage.getItem("openlap-settings")).darkMode,
+    options.colors
   ]);
 
   function dynamicMap(data) {
@@ -461,15 +541,56 @@ export default function DotChart({
   // };
 
   // Function to handle the categorical dropdown data
+  const handleSetDefaultCategorical =(
+    categoricalColumnField,
+    categoricalColumnName,
+    categoricalColumnDataArray,
+    unique = false
+  )=>{
+    let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
+    let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
+    let tempOptions;
+    console.log("setting default categorical")
+    setOptions((prevStateOptions) => {
+      tempOptions = {
+        ...prevStateOptions,
+        xaxis: {
+          ...prevStateOptions.xaxis,
+          name: categoricalColumnName,
+          categories: categoricalColumnDataArray,
+          field: categoricalColumnField,
+          unique,
+        },
+        default: false,
+        // headerNameOptions: categoricalColumnField,
+        // headerNameSeries: [""],
+      };
+      /* setSeries(() => {
+        let tempArray = categoricalColumnDataArray.map((item) => 0);
+        let tempSeries = [{ name: "", data: tempArray, field: "" }];
+        sessionStorage.setItem("chart-series", JSON.stringify(tempSeries));
+        return [];
+      }); */
+      /* sessionStorage.setItem("chart-options", JSON.stringify(tempOptions)); */
+      return tempOptions;
+    });
+    setDefaultCategorical(true);
+    return;
+
+  }
+
   const handleSetCategoricalOptions = (
     categoricalColumnField,
     categoricalColumnName,
     categoricalColumnDataArray,
+    defaultCategorical=true,
     unique = false
   ) => {
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
     let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
     let tempOptions;
+    
+
     if (sessionOptions.default) {
       setOptions((prevStateOptions) => {
         tempOptions = {
@@ -485,12 +606,12 @@ export default function DotChart({
           // headerNameOptions: categoricalColumnField,
           // headerNameSeries: [""],
         };
-        setSeries(() => {
+      /*   setSeries(() => {
           let tempArray = categoricalColumnDataArray.map((item) => 0);
           let tempSeries = [{ name: "", data: tempArray, field: "" }];
           sessionStorage.setItem("chart-series", JSON.stringify(tempSeries));
           return [];
-        });
+        }); */
         sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
         return tempOptions;
       });
@@ -596,6 +717,45 @@ export default function DotChart({
     });
   };
 
+  const handleSetDefaultNumericalSeries= (
+    numericalColumnField,
+    numericalColumnName,
+    numericalColumnDataArray,
+    update
+  )=>{
+    setOptions((prevState) => {
+      let tempOptions = {
+        ...prevState,
+        xaxis: {
+          ...prevState.xaxis,
+          /* name: "",
+          categories: [], */
+        },
+        headerNameOptions: "",
+        // headerNameSeries: [numericalColumnField],
+        default: false,
+      };
+      sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
+      return tempOptions;
+    });
+
+    setSeries(() => {
+      let tempSeries = [
+        {
+          name: numericalColumnName,
+          data: numericalColumnDataArray,
+          field: numericalColumnField,
+        },
+      ];
+      console.log(tempSeries)
+      sessionStorage.setItem("chart-series", JSON.stringify(tempSeries));
+      console.log(JSON.parse(sessionStorage.getItem("chart-series")));
+      return tempSeries;
+    });
+    setDefaultNumerical(true);
+    return;
+  }
+
   // Function to handle the numerical dropdown data
   const handleSetNumericalSeries = (
     numericalColumnField,
@@ -605,15 +765,17 @@ export default function DotChart({
   ) => {
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
     let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
+    console.log(sessionOptions.default)
     // Still default state
-    if (sessionOptions.default) {
+    if (sessionOptions.default ) {
+     console.log("adding another line")
       setOptions((prevState) => {
         let tempOptions = {
           ...prevState,
           xaxis: {
             ...prevState.xaxis,
-            name: "",
-            categories: [],
+            /* name: "",
+            categories: [], */
           },
           headerNameOptions: "",
           // headerNameSeries: [numericalColumnField],
@@ -623,7 +785,7 @@ export default function DotChart({
         return tempOptions;
       });
 
-      setSeries(() => {
+      /* setSeries(() => {
         let tempSeries = [
           {
             name: numericalColumnName,
@@ -633,6 +795,50 @@ export default function DotChart({
         ];
         sessionStorage.setItem("chart-series", JSON.stringify(tempSeries));
         return tempSeries;
+      }); */
+      setSeries(() => {
+        let tempSeries = [
+          {
+            name: numericalColumnName,
+            data: numericalColumnDataArray,
+            field: numericalColumnField,
+          },
+        ];
+  
+        let tempSeriesArray = [];
+        console.log(sessionSeries)
+        if (allowedMultipleEnties) {
+          tempSeriesArray = [...sessionSeries, ...tempSeries];
+        } else tempSeriesArray = [...tempSeriesArray, ...tempSeries];
+  
+        // let tempSeriesNameArray = [];
+        let finalSeriesArray = [];
+  
+        for (let i = 0; i < tempSeriesArray.length; i++) {
+          if (tempSeriesArray[i].name === "Count") {
+            // tempSeriesNameArray.push("Count");
+            finalSeriesArray.push(tempSeriesArray[i]);
+          } else {
+            let foundHeaderName = columnData.find(
+              (item) => item.field === tempSeriesArray[i].field
+            );
+            if (Boolean(foundHeaderName)) {
+              // tempSeriesNameArray.push(foundHeaderName.headerName);
+              finalSeriesArray.push(tempSeriesArray[i]);
+            }
+          }
+        }
+        // setOptions((prevState) => {
+        //   let tempOptions = {
+        //     ...prevState,
+        //     headerNameSeries: tempSeriesNameArray,
+        //     default: false,
+        //   };
+        //   sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
+        //   return tempOptions;
+        // });
+        sessionStorage.setItem("chart-series", JSON.stringify(finalSeriesArray));
+        return finalSeriesArray;
       });
       return;
     }
@@ -645,6 +851,7 @@ export default function DotChart({
         numericalColumnField,
         sessionOptions.xaxis.categories
       );
+      
       setSeries(() => {
         let tempData = [
           {
@@ -697,6 +904,7 @@ export default function DotChart({
     }
     // To update the current data
     if (update) {
+      
       let tempSeriesArray = [...sessionSeries];
       let findIndexSeries = tempSeriesArray.findIndex(
         (series) => series.field === numericalColumnField
@@ -711,6 +919,7 @@ export default function DotChart({
       return;
     }
     // Normal
+  
     setSeries(() => {
       let tempSeries = [
         {
@@ -721,7 +930,7 @@ export default function DotChart({
       ];
 
       let tempSeriesArray = [];
-
+      
       if (allowedMultipleEnties) {
         tempSeriesArray = [...sessionSeries, ...tempSeries];
       } else tempSeriesArray = [...tempSeriesArray, ...tempSeries];
@@ -817,18 +1026,153 @@ export default function DotChart({
       return tempSeries;
     });
   };
+  const handleTitleChange = (e) => {
+    setOptions({
+      ...options,
+      title: {
+        ...options.title,
+        text: e.target.value
+      }
+    });
+  };
+
+  const handleHorizontalLabelChange = (e) => {
+    setOptions(
+      {
+        ...options,
+        xaxis: {
+          ...options.xaxis,
+          title: {
+            text: e.target.value
+          }
+        }
+      }
+    )
+  }
+  const handleVerticalLabelChange = (e) => {
+    setOptions(
+      {
+        ...options,
+        yaxis: {
+          ...options.yaxis,
+          title: {
+            text: e.target.value
+          }
+        }
+      }
+    )
+  }
+  const handleMeanAnnotation = () => {
+    let mean = computeMean();
+    setOptions(
+      {
+        ...options,
+        annotations: {
+          yaxis: [
+            {
+              y: mean,
+              borderColor: '#FF0000',
+              label: {
+                borderColor: '#FF0000',
+                style: {
+                  color: '#fff',
+                  background: '#FF0000'
+                },
+                text: 'Y-axis annotation on ' + mean
+              }
+            }
+          ]
+        }
+      }
+    );
+  };
+
+  const handleResetMeanAnnotation = () => {
+    //TODO: To remove added annotations
+    const { annotations, ...newOptions } = options;
+    setOptions(newOptions);
+  }
+
+  const handleColorChange = (e) => {
+    console.log(e)
+
+    setOptions(
+      e
+    );
+    // Simulate removing and adding an element from the series array
+    const removedElement = series.pop(); 
+    setSeries([...series]);
+
+
+    
+    setSeries([...series, removedElement]); 
+    setOptions({ ...options }); 
+  };
+
+  const handleAddLines = () => {
+    var sum = series[0].data.map(function (num, idx) {
+      return num + series[1].data[idx];
+    });
+    setSeries([...series, { name: "sum", data: sum, field: "sum" }]);
+  }
+  const handleSubtractLines = () => {
+    var sum = series[0].data.map(function (num, idx) {
+      return Math.abs(num - series[1].data[idx]);
+    });
+    setSeries([...series, { name: "Difference", data: sum, field: "Difference" }]);
+  }
+
+  const computeMean = () => {
+    var sum = 0;
+    for (var i = 0; i < series[0].data.length; i++) {
+      sum += series[0].data[i];
+    }
+    return sum / series[0].data.length;
+  }
+
+  const handleColorPick = (color) => {
+    if (activeSeries !== null) {
+      const newOptions = { ...options };
+      newOptions.colors[activeSeries] = color.hex;
+      handleColorChange(newOptions); // Assuming this function updates state with newOptions
+      setSelectedColor(color.hex);
+    }
+  };
+
+  const handleSeriesColorChange = (index) => {
+    setActiveSeries(index);
+    setSelectedColor(options.colors[index] || '#000000');
+  };
+
+  const handleChange= (event, newValue)=>
+    {
+      setValue(newValue);
+    }
+    
+ 
 
   return (
     <>
+      <div></div>
       <Grid container sx={{ minHeight: "45vh" }}>
-        <Grid item xs={12} sm={openEditor.open ? 8 : 12}>
+        <Grid item xs={12} sx={{ textAlign: 'right' }}>
+          <Button onClick={toggleSettings}>
+            {openSettings ? 'Hide Settings' : 'Show Settings'}
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={openSettings ? 9 : 12}>
           <Grid container alignItems="center">
-            <Grid item xs={12} md={2}>
+          <Grid item xs={12} md={2}>
+              {/* Assuming NumericalDropdown component is defined elsewhere */
+              defaultNumerical!==undefined?
               <NumericalDropdown
                 allowedMultipleEnties={allowedMultipleEnties}
                 axisLabel={"Y-Axis: Numerical"}
                 series={series}
                 options={options}
+                defaultNumercial={defaultNumerical}
+                setDefaultNumerical={setDefaultNumerical}
+                handleSetDefaultNumericalSeries={handleSetDefaultNumericalSeries}
                 dataState={dataState}
                 handleSetNumericalSeries={handleSetNumericalSeries}
                 handleDeleteNumericalSeries={handleDeleteNumericalSeries}
@@ -836,14 +1180,12 @@ export default function DotChart({
                 handleEditColumnData={handleEditColumnData}
                 handleNameColumn={handleNameColumn}
                 toggleEditPanel={toggleEditPanel}
-              />
+              />:
+              <p></p>
+    }
             </Grid>
             <Grid item xs={12} md={10}>
               <Grid container justifyContent="center">
-                {/* // TODO: Add the switching to horizontal orientation */}
-                {/* <Grid container justifyContent="flex-end">
-                  <Switch />
-                </Grid> */}
                 <Grid item xs={12} sx={{ height: "500px", mb: 2 }}>
                   <Chart
                     options={options}
@@ -853,15 +1195,19 @@ export default function DotChart({
                   />
                 </Grid>
                 <Grid item>
+                  {/* Assuming CategoricalDropdown component is defined elsewhere */}
                   <CategoricalDropdown
                     axisLabel={"X-Axis: Categorical"}
                     series={series}
                     options={options}
+                    defaultCategorical={defaultCategorical}
+                    setDefaultCategorical={setDefaultCategorical}
+                    handleSetDefaultCategorical={handleSetDefaultCategorical}
                     dataState={dataState}
+                    setOptions={setOptions}
+                    setSeries={setSeries}
                     handleSetCategoricalOptions={handleSetCategoricalOptions}
-                    handleDeleteCategoricalOptions={
-                      handleDeleteCategoricalOptions
-                    }
+                    handleDeleteCategoricalOptions={handleDeleteCategoricalOptions}
                     handleSetCountOccurrences={handleSetCountOccurrences}
                     handleNameColumn={handleNameColumn}
                     handleEditColumnData={handleEditColumnData}
@@ -872,7 +1218,7 @@ export default function DotChart({
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        {/* <Grid item xs={12} sm={4}>
           <Fade
             {...(Boolean(open) ? { timeout: 1000 } : {})}
             in={Boolean(open)}
@@ -892,6 +1238,66 @@ export default function DotChart({
               )}
             </Box>
           </Fade>
+        </Grid> */}
+        <Grid item xs={12} sm={openSettings ? 3 : 'auto'}>
+          <Collapse in={openSettings} timeout="auto" unmountOnExit>
+            <Box p={2} sx={{ width: '100%', maxWidth: '300px', boxSizing: 'border-box' }}>
+              <TabContext value={value}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <TabList onChange={handleChange}>
+                    <Tab label="Labels" value="1" />
+                    <Tab label="Colours" value="2" />
+                    {/* <Tab label="Series" value="3" /> */}
+                  </TabList>
+                </Box>
+                <TabPanel value="1">
+                  <Box mt={2}>
+                    <TextField
+                      value={options.title.text}
+                      label="Title"
+                      onChange={handleTitleChange}
+                      fullWidth
+                    />
+                  </Box>
+                  <Box mt={2}>
+                    <TextField
+                      value={options.xaxis.title.text}
+                      label="x-axis"
+                      onChange={handleHorizontalLabelChange}
+                      fullWidth
+                    />
+                  </Box>
+                  <Box mt={2}>
+                    <TextField
+                      value={options.yaxis.title.text}
+                      label="y-axis"
+                      onChange={handleVerticalLabelChange}
+                      fullWidth
+                    />
+                  </Box>
+                </TabPanel>
+                <TabPanel value="2">
+                  <Box mt={2}>
+                  {series.map((s, index) => (
+                    <Box key={s.name} mt={2}>
+                      <label>{s.name} : </label>
+                      <Button onClick={() => handleSeriesColorChange(index)}>
+                        Select Color
+                      </Button>
+                      {activeSeries === index && (
+                       <Box mt={2}>
+                        <Button onClick={() => setActiveSeries(null)}>X</Button>
+                       <SketchPicker color={selectedColor} onChange={handleColorPick} />
+            
+                     </Box>
+                      )}
+                    </Box>
+                  ))}
+                  </Box>
+                </TabPanel>
+              </TabContext>
+            </Box>
+          </Collapse>
         </Grid>
       </Grid>
     </>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Fade, Grid } from "@mui/material";
+import {  Collapse,TextField, Select, MenuItem,Box, Button,Fade, Grid,ToggleButtonGroup, ToggleButton,Paper } from "@mui/material";
 import Chart from "react-apexcharts";
 import { Edit as EditIcon } from "@mui/icons-material";
 
@@ -12,8 +12,15 @@ import {
   extractProperties,
 } from "./utils/functions.js";
 import { v4 as uuidv4 } from "uuid";
+import { SketchPicker } from 'react-color';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
-export default function StackedBarChart({
+
+
+export default function BarChart({
   openEditor,
   toggleEditPanel,
   dataState: { rowData, columnData },
@@ -22,8 +29,53 @@ export default function StackedBarChart({
   handleAddNewRows,
   handleDeleteIndicatorData,
 }) {
+
   let chartType = "bar";
-  let allowedMultipleEnties = true;
+  let allowedMultipleEnties = false;
+
+  const [value, setValue] = useState("1")
+  const [openSettings, setOpenSettings] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showLabels, setShowLabels] = useState(false);
+  const [showSeries, setShowSeries] = useState(false);
+  const [showColors, setShowColors] = useState(false);
+  const [defaultCategorical,setDefaultCategorical]=useState(true)
+  const [defaultNumerical,setDefaultNumerical]=useState(true)
+  const [selectedMeanButton, setSelectedMeanButton] = useState(null);
+  const [sortOrder, setSortOrder] = useState(''); 
+
+  const toggleDrawer = () => setDrawerOpen(!drawerOpen);
+  const toggleSettings = () => setOpenSettings(!openSettings);
+  const toggleLabels = () => {
+    setShowLabels(!showLabels);
+    setShowSeries(false);
+    setShowColors(false);
+  };
+
+  const toggleSeries = () => {
+    setShowSeries(!showSeries);
+    setShowLabels(false);
+    setShowColors(false);
+  };
+
+
+  const toggleColors = () => {
+    setShowColors(!showColors);
+    setShowLabels(false);
+    setShowSeries(false);
+  };
+
+  const [selectedColor, setSelectedColor] = useState('#00FF00');
+  const [activeCategory, setActiveCategory] = useState(null);
+
+  const handleToggleMeanButton = (event, newSelectedButton) => {
+    setSelectedMeanButton(newSelectedButton);
+    if (newSelectedButton === 'mean') {
+      handleMeanAnnotation();
+    } else if (newSelectedButton === 'reset') {
+      handleResetMeanAnnotation();
+    }
+  };
 
   const [series, setSeries] = useState([
     {
@@ -36,26 +88,51 @@ export default function StackedBarChart({
     chart: {
       type: chartType,
       stacked: true,
-      stackType: "100%",
+      stackType:"100%",
       width: "100%",
       foreColor: JSON.parse(sessionStorage.getItem("openlap-settings"))
         ?.darkMode
         ? "#ffffff"
-        : "#000000", // TODO: Need to find a way to change the legend color dynamically
+        : "#000000",
+    },
+    colors: [ 
+      "#33b2df",
+      "#546E7A",
+      "#d4526e",
+      "#13d8aa",
+      "#A5978B",
+      "#2b908f",
+      "#f9a3a4",
+      "#90ee7e",
+      "#f48024",
+      "#69d2e7"
+      ],
+
+    title: {
+      text: '',
+      align: 'left'
     },
     plotOptions: {
       bar: {
         borderRadius: 4,
+        distributed: true,
         horizontal: false,
       },
     },
     xaxis: {
       name: "", // columnName of Datagrid
+      title:
+      {
+        text:""
+      },
       categories: ["Category 1", "Category 2", "Category 3"],
       convertedCatToNumeric: true,
       field: "categories", // Custom property, field of DataGrid
       unique: false, // Custom property
     },
+    yaxis:{title:{
+      text:""
+    }},
     default: true,
     legend: {
       position: "top",
@@ -68,7 +145,7 @@ export default function StackedBarChart({
       onDatasetHover: {
         highlightDataSeries: true,
       },
-    },
+    }
   });
 
   const defaultColumn = [
@@ -93,6 +170,17 @@ export default function StackedBarChart({
   ];
   const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState(defaultColumn);
+
+  useEffect(()=>{
+    setDefaultCategorical(false);
+    setDefaultNumerical(false);
+  }, [])
+
+  useEffect(()=>{
+    return ()=>{
+    setDefaultCategorical(true);
+    setDefaultNumerical(true);
+  }}, [])
 
   useEffect(() => {
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
@@ -468,6 +556,43 @@ export default function StackedBarChart({
   // };
 
   // Function to handle the categorical dropdown data
+  const handleSetDefaultCategorical =(
+    categoricalColumnField,
+    categoricalColumnName,
+    categoricalColumnDataArray,
+    unique = false
+  )=>{
+    let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
+    let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
+    let tempOptions;
+    console.log("setting default categorical")
+    setOptions((prevStateOptions) => {
+      tempOptions = {
+        ...prevStateOptions,
+        xaxis: {
+          ...prevStateOptions.xaxis,
+          name: categoricalColumnName,
+          categories: categoricalColumnDataArray,
+          field: categoricalColumnField,
+          unique,
+        },
+        default: false,
+        // headerNameOptions: categoricalColumnField,
+        // headerNameSeries: [""],
+      };
+      /* setSeries(() => {
+        let tempArray = categoricalColumnDataArray.map((item) => 0);
+        let tempSeries = [{ name: "", data: tempArray, field: "" }];
+        sessionStorage.setItem("chart-series", JSON.stringify(tempSeries));
+        return [];
+      }); */
+      /* sessionStorage.setItem("chart-options", JSON.stringify(tempOptions)); */
+      return tempOptions;
+    });
+    setDefaultCategorical(true);
+    return;
+
+  }
   const handleSetCategoricalOptions = (
     categoricalColumnField,
     categoricalColumnName,
@@ -477,6 +602,7 @@ export default function StackedBarChart({
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
     let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
     let tempOptions;
+
     if (sessionOptions.default) {
       setOptions((prevStateOptions) => {
         tempOptions = {
@@ -501,6 +627,7 @@ export default function StackedBarChart({
         sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
         return tempOptions;
       });
+      
       return;
     }
     // Unique
@@ -602,7 +729,44 @@ export default function StackedBarChart({
       return tempOptions;
     });
   };
+  const handleSetDefaultNumericalSeries= (
+    numericalColumnField,
+    numericalColumnName,
+    numericalColumnDataArray,
+    update
+  )=>{
+    setOptions((prevState) => {
+      let tempOptions = {
+        ...prevState,
+        xaxis: {
+          ...prevState.xaxis,
+          /* name: "",
+          categories: [], */
+        },
+        headerNameOptions: "",
+        // headerNameSeries: [numericalColumnField],
+        default: false,
+      };
+      sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
+      return tempOptions;
+    });
 
+    setSeries(() => {
+      let tempSeries = [
+        {
+          name: numericalColumnName,
+          data: numericalColumnDataArray,
+          field: numericalColumnField,
+        },
+      ];
+      console.log(tempSeries)
+      sessionStorage.setItem("chart-series", JSON.stringify(tempSeries));
+      console.log(JSON.parse(sessionStorage.getItem("chart-series")));
+      return tempSeries;
+    });
+    setDefaultNumerical(true);
+    return;
+  }
   // Function to handle the numerical dropdown data
   const handleSetNumericalSeries = (
     numericalColumnField,
@@ -612,6 +776,7 @@ export default function StackedBarChart({
   ) => {
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
     let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
+    
     // Still default state
     if (sessionOptions.default) {
       setOptions((prevState) => {
@@ -619,8 +784,8 @@ export default function StackedBarChart({
           ...prevState,
           xaxis: {
             ...prevState.xaxis,
-            name: "",
-            categories: [],
+            /* name: "",
+            categories: [], */
           },
           headerNameOptions: "",
           // headerNameSeries: [numericalColumnField],
@@ -790,6 +955,7 @@ export default function StackedBarChart({
     sessionStorage.setItem("chart-series", JSON.stringify(filterSeries));
   };
 
+
   // Method to count the number of occurrences of each unique value
   const handleSetCountOccurrences = (
     categoricalColumnField,
@@ -824,18 +990,155 @@ export default function StackedBarChart({
       return tempSeries;
     });
   };
+  const handleSortChange = (order) => {
+    console.log(order)
+    const sortedData = [...series[0].data];
+    const sortedCategories = [...options.xaxis.categories];
+    const combined = sortedData.map((value, index) => ({ value, category: sortedCategories[index] }));
 
-  return (
-    <>
+    combined.sort((a, b) => (order === 'asc' ? a.value - b.value : b.value - a.value));
+    
+    setSeries([{ ...series[0], data: combined.map(item => item.value) }]);
+    setOptions({
+      ...options,
+      xaxis: {
+        ...options.xaxis,
+        categories: combined.map(item => item.category)
+      }
+    });
+  };
+
+  const handleTitleChange = (e) => {
+    setOptions({
+      ...options,
+      title: {
+        ...options.title,
+        text: e.target.value
+      }
+    });
+  };
+
+  const handleHorizontalLabelChange= (e)=>{
+    setOptions(
+      {
+        ...options,
+        xaxis:{
+          ...options.xaxis,
+          title:{
+            text: e.target.value
+          } 
+        }
+      }
+    )
+  }
+  const handleVerticalLabelChange= (e)=>{
+    setOptions(
+      {
+        ...options,
+        yaxis:{
+          ...options.yaxis,
+          title:{
+        text:e.target.value
+          } 
+        }
+      }
+    )
+  }
+  const handleColorChange = (e) => {
+    setOptions(
+      e
+    );
+
+    const removedElement = series.pop(); 
+    setSeries([...series]);
+
+
+    
+    setSeries([...series, removedElement]); 
+    setOptions({ ...options }); 
+
+  };
+
+  const handleMeanAnnotation= ()=>{
+    let mean=computeMean();
+    setOptions(
+      {
+        ...options,
+        annotations: {
+          yaxis: [
+            {
+              y: mean,
+              borderColor: '#FF0000',
+              label: {
+                borderColor: '#FF0000',
+                style: {
+                  color: '#fff',
+                  background: '#FF0000'
+                },
+                text: 'Y-axis annotation on '+mean
+              }
+            }
+          ]
+        }
+      }
+    );
+  };
+
+  const handleResetMeanAnnotation= ()=>{
+    //TODO: To remove added annotations
+    const {annotations,...newOptions}=options;
+    setOptions(newOptions);
+    
+  }
+
+  const computeMean= () =>{
+    var sum=0;
+    for(var i=0;i<series[0].data.length;i++)
+    {
+      sum+=series[0].data[i];
+    }
+    return sum/series[0].data.length;
+  }
+
+  const handleColorPick = (color) => {
+    if (activeCategory !== null) {
+      const newOptions = { ...options };
+      newOptions.colors[activeCategory] = color.hex;
+      handleColorChange(newOptions); // Assuming this function updates state with newOptions
+      setSelectedColor(color.hex);
+    }
+  };
+
+  const handleSeriesColorChange = (index) => {
+    setActiveCategory(index);
+    setSelectedColor(options.colors[index] || '#000000');
+  };
+  const handleChange= (event, newValue)=>
+    {
+      setValue(newValue);
+    }
+    
+    return (
       <Grid container sx={{ minHeight: "45vh" }}>
-        <Grid item xs={12} sm={openEditor.open ? 8 : 12}>
+        <Grid item xs={12} sx={{ textAlign: 'right' }}>
+          <Button onClick={toggleSettings}>
+            {openSettings ? 'Hide Settings' : 'Show Settings'}
+          </Button>
+        </Grid>
+    
+        <Grid item xs={12} sm={openSettings ? 9 : 12}>
           <Grid container alignItems="center">
             <Grid item xs={12} md={2}>
+              {/* Assuming NumericalDropdown component is defined elsewhere */
+              defaultNumerical!==undefined?
               <NumericalDropdown
                 allowedMultipleEnties={allowedMultipleEnties}
                 axisLabel={"Y-Axis: Numerical"}
                 series={series}
                 options={options}
+                defaultNumercial={defaultNumerical}
+                setDefaultNumerical={setDefaultNumerical}
+                handleSetDefaultNumericalSeries={handleSetDefaultNumericalSeries}
                 dataState={dataState}
                 handleSetNumericalSeries={handleSetNumericalSeries}
                 handleDeleteNumericalSeries={handleDeleteNumericalSeries}
@@ -843,14 +1146,12 @@ export default function StackedBarChart({
                 handleEditColumnData={handleEditColumnData}
                 handleNameColumn={handleNameColumn}
                 toggleEditPanel={toggleEditPanel}
-              />
+              />:
+              <p></p>
+    }
             </Grid>
             <Grid item xs={12} md={10}>
               <Grid container justifyContent="center">
-                {/* // TODO: Add the switching to horizontal orientation */}
-                {/* <Grid container justifyContent="flex-end">
-                  <Switch />
-                </Grid> */}
                 <Grid item xs={12} sx={{ height: "500px", mb: 2 }}>
                   <Chart
                     options={options}
@@ -860,15 +1161,19 @@ export default function StackedBarChart({
                   />
                 </Grid>
                 <Grid item>
+                  {/* Assuming CategoricalDropdown component is defined elsewhere */}
                   <CategoricalDropdown
                     axisLabel={"X-Axis: Categorical"}
                     series={series}
                     options={options}
+                    defaultCategorical={defaultCategorical}
+                    setDefaultCategorical={setDefaultCategorical}
+                    handleSetDefaultCategorical={handleSetDefaultCategorical}
                     dataState={dataState}
+                    setOptions={setOptions}
+                    setSeries={setSeries}
                     handleSetCategoricalOptions={handleSetCategoricalOptions}
-                    handleDeleteCategoricalOptions={
-                      handleDeleteCategoricalOptions
-                    }
+                    handleDeleteCategoricalOptions={handleDeleteCategoricalOptions}
                     handleSetCountOccurrences={handleSetCountOccurrences}
                     handleNameColumn={handleNameColumn}
                     handleEditColumnData={handleEditColumnData}
@@ -879,28 +1184,66 @@ export default function StackedBarChart({
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Fade
-            {...(Boolean(open) ? { timeout: 1000 } : {})}
-            in={Boolean(open)}
-          >
-            <Box>
-              {openEditor.open && (
-                <EditPanel
-                  columns={columns}
-                  dataState={dataState}
-                  rows={rows}
-                  toggleEditPanel={toggleEditPanel}
-                  handleAddNewRows={handleAddNewRows}
-                  handleDeleteIndicatorData={handleDeleteIndicatorData}
-                  handleProcessRowUpdate={handleProcessRowUpdate}
-                  handleRenameColumn={handleRenameColumn}
-                />
-              )}
+    
+        <Grid item xs={12} sm={openSettings ? 3 : 'auto'}>
+          <Collapse in={openSettings} timeout="auto" unmountOnExit>
+            <Box p={2} sx={{ width: '100%', maxWidth: '300px', boxSizing: 'border-box' }}>
+              <TabContext value={value}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <TabList onChange={handleChange}>
+                    <Tab label="Labels" value="1" />
+                    <Tab label="Colours" value="2" />
+                    {/* <Tab label="Series" value="3" /> */}
+                  </TabList>
+                </Box>
+                <TabPanel value="1">
+                  <Box mt={2}>
+                    <TextField
+                      value={options.title.text}
+                      label="Title"
+                      onChange={handleTitleChange}
+                      fullWidth
+                    />
+                  </Box>
+                  <Box mt={2}>
+                    <TextField
+                      value={options.xaxis.title.text}
+                      label="x-axis"
+                      onChange={handleHorizontalLabelChange}
+                      fullWidth
+                    />
+                  </Box>
+                  <Box mt={2}>
+                    <TextField
+                      value={options.yaxis.title.text}
+                      label="y-axis"
+                      onChange={handleVerticalLabelChange}
+                      fullWidth
+                    />
+                  </Box>
+                </TabPanel>
+                <TabPanel value="2">
+                  <Box mt={2}>
+                    {options.xaxis.categories.map((s, index) => (
+                      <Box key={s} mt={2}>
+                        <label>{s} </label>
+                        <Button onClick={() => handleSeriesColorChange(index)}>
+                          Select Color
+                        </Button>
+                        {activeCategory === index && (
+                          <Box mt={2}>
+                            <Button onClick={() => setActiveCategory(null)}>X</Button>
+                            <SketchPicker color={selectedColor} onChange={handleColorPick} />
+                          </Box>
+                        )}
+                      </Box>
+                    ))}
+                  </Box>
+                </TabPanel>
+              </TabContext>
             </Box>
-          </Fade>
+          </Collapse>
         </Grid>
       </Grid>
-    </>
-  );
-}
+    );
+  }

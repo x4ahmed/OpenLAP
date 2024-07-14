@@ -32,6 +32,9 @@ export default function CategoricalDropdown({
   axisLabel,
   series,
   options,
+  defaultCategorical,
+  setDefaultCategorical,
+  handleSetDefaultCategorical,
   dataState: { rowData, columnData },
   handleSetCategoricalOptions,
   handleSetCountOccurrences,
@@ -73,6 +76,7 @@ export default function CategoricalDropdown({
         columnData.find(
           (col) => col.headerName.toLowerCase() === columnName.toLowerCase()
         )
+
       ) {
         setColumnNameExist({
           status: true,
@@ -82,7 +86,29 @@ export default function CategoricalDropdown({
         setColumnNameExist({ status: false, message: "" });
       }
     }
+    
   }, [columnName]);
+
+  useEffect(() => {
+    console.log(defaultCategorical)
+    if (columnData.length > 0 && !defaultCategorical) {
+      const columnIndex = columnData.findIndex((col)=>col.type==='string');
+      if (columnIndex!==-1)
+        {
+      let categoricalColumnField = columnData[columnIndex].field;
+      let categoricalColumnName = columnData[columnIndex].headerName;
+      let categoricalColumnDataArray = rowData.map(
+        (row) => row[categoricalColumnField]
+      );
+      console.log("categorical dropdown mounted")
+      handleSetDefaultCategorical(
+        categoricalColumnField,
+        categoricalColumnName,
+        categoricalColumnDataArray,
+        false
+      )
+    }}
+  }, [columnData, defaultCategorical]);
 
   // The function is trigger via the submit button in the editor panel
   const handleSubmitNewColumnData = (event) => {
@@ -102,6 +128,7 @@ export default function CategoricalDropdown({
     setAnchorEl(null);
     setAnchorElMethod(null);
     setAnchorElUnique(null);
+    console.log(columnData)
     let categoricalColumnField = columnData.field;
     let categoricalColumnName = columnData.headerName;
     let categoricalColumnDataArray = rowData.map(

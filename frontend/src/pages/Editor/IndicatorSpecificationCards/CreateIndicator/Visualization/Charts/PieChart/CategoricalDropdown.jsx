@@ -78,11 +78,29 @@ export default function CategoricalDropdown({
           status: true,
           message: "Axis title already exists",
         });
-      } else {
-        setColumnNameExist({ status: false, message: "" });
-      }
+      } 
     }
   }, [columnName]);
+
+     useEffect(() => {
+    if (columnData.length > 0) {
+      const columnIndex = columnData.findIndex((col)=>col.type==='string');
+      if (columnIndex!==-1)
+        {
+      let categoricalColumnField = columnData[columnIndex].field;
+      let categoricalColumnName = columnData[columnIndex].headerName;
+      let categoricalColumnDataArray = rowData.map(
+        (row) => row[categoricalColumnField]
+      );
+      handleSetCategoricalOptions(
+        categoricalColumnField,
+        categoricalColumnName,
+        categoricalColumnDataArray,
+        false,
+        false
+      );
+    }}
+  }, [columnData]);    
 
   // The function is trigger via the submit button in the editor panel
   const handleSubmitNewColumnData = (event) => {
@@ -114,6 +132,7 @@ export default function CategoricalDropdown({
         categoricalColumnField,
         categoricalColumnName,
         uniqueColumnDataArray,
+        false,
         unique
       );
     } else {
@@ -121,6 +140,7 @@ export default function CategoricalDropdown({
         categoricalColumnField,
         categoricalColumnName,
         categoricalColumnDataArray,
+        false,
         unique
       );
     }

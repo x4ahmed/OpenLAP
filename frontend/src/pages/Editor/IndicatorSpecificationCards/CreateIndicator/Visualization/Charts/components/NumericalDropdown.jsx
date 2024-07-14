@@ -29,7 +29,10 @@ export default function NumericalDropdown({
   allowedMultipleEnties,
   axisLabel,
   series,
-  options,
+  options, 
+  defaultNumerical,
+  setDefaultNumerical,
+  handleSetDefaultNumericalSeries,
   dataState: { rowData, columnData },
   handleSetNumericalSeries,
   handleDeleteNumericalSeries,
@@ -41,6 +44,7 @@ export default function NumericalDropdown({
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
 
+  
   const handleOpenMenu = (e) => {
     toggleEditPanel("", false);
     setAnchorEl(e.currentTarget);
@@ -53,7 +57,8 @@ export default function NumericalDropdown({
   });
   const [numberOfRows, setNumberOfRows] = useState(0);
   const [openColumnModal, setOpenColumnModal] = useState(false);
-
+  /* const [defaultNumerical, setDefaultNumerical]=useState(false) */
+  
   useEffect(() => {
     if (Boolean(columnName)) {
       if (
@@ -69,7 +74,32 @@ export default function NumericalDropdown({
         setColumnNameExist({ status: false, message: "" });
       }
     }
-  }, [columnName, options]);
+  }, [columnName]);
+
+   useEffect(() => {
+    console.log(defaultNumerical);
+    if (columnData.length>0 && !defaultNumerical ) {
+      console.log(columnData)
+      const columnIndex = columnData.findIndex((col)=>col.type==='number');
+      console.log(columnIndex)
+      if (columnIndex!==-1)
+        {
+      let numericalColumnField = columnData[columnIndex].field;
+      let numericalColumnName = columnData[columnIndex].headerName;
+      let numericalColumnDataArray = rowData.map(
+        (row) => row[numericalColumnField]
+      );
+      handleSetDefaultNumericalSeries(
+        numericalColumnField,
+        numericalColumnName,
+        numericalColumnDataArray,
+        false
+      );
+    }}
+    
+  }, [columnData, defaultNumerical]); 
+
+  
 
   const handleSubmitNewColumnData = (event) => {
     event.preventDefault();

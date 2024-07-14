@@ -71,6 +71,29 @@ export default function NumericalDropdown({
     }
   }, [columnName, options]);
 
+  useEffect(() => {
+    if (columnData.length>0) {
+      console.log(columnData)
+      const columnIndex = columnData.findIndex((col)=>col.type==='number');
+      console.log(columnIndex)
+      if (columnIndex!==-1)
+        {
+      let numericalColumnField = columnData[columnIndex].field;
+      let numericalColumnName = columnData[columnIndex].headerName;
+      let numericalColumnDataArray = rowData.map(
+        (row) => row[numericalColumnField]
+      );
+      console.log(columnData)
+      handleSetNumericalSeries(
+        numericalColumnField,
+        numericalColumnName,
+        numericalColumnDataArray,
+        false,
+        false
+      );
+    }}
+  }, [columnData]);
+
   const handleSubmitNewColumnData = (event) => {
     event.preventDefault();
     if ((numberOfRows !== 0 || Boolean(rowData.length)) && columnName !== "") {
