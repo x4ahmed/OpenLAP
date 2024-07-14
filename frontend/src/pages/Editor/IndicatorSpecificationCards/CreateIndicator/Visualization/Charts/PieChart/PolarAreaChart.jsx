@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Fade, Grid } from "@mui/material";
+import {  Collapse,TextField, Select, MenuItem,Box, Button,Fade, Grid,ToggleButtonGroup, ToggleButton,Paper } from "@mui/material";
 import Chart from "react-apexcharts";
 import { Edit as EditIcon } from "@mui/icons-material";
 
@@ -11,6 +11,11 @@ import {
   extractProperties,
   getUniqueValuesAndCounts,
 } from "../utils/functions";
+import { SketchPicker } from 'react-color';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
 export default function PieChart({
   openEditor,
@@ -22,22 +27,100 @@ export default function PieChart({
   handleDeleteIndicatorData,
 }) {
   let chartType = "polarArea";
+  const colorOptions = [
+    { label: 'Green', value: '#00E396' },
+    { label: 'Red', value: '#FF4560' },
+    { label: 'Blue', value: '#008FFB' },
+    { label: 'Yellow', value: '#FEB019' },
+    { label: 'Purple', value: '#775DD0' }
+  ];
+  let allowedMultipleEnties = false;
+  const [openSettings, setOpenSettings] = useState(false);
+  const [showColors, setShowColors] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showLabels, setShowLabels] = useState(false);
+  const [showSeries, setShowSeries] = useState(false);
+  const [value,setValue]=useState("1")
+  const [sortOrder, setSortOrder] = useState('asc');  
+
+  const toggleDrawer = () => setDrawerOpen(!drawerOpen);
+  const toggleSettings = () => setOpenSettings(!openSettings);
+ 
+  const toggleLabels = () => {
+    setShowLabels(!showLabels);
+    setShowSeries(false);
+    setShowColors(false);
+  };
+
+  const toggleSeries = () => {
+    setShowSeries(!showSeries);
+    setShowLabels(false);
+    setShowColors(false);
+  };
+
+  const toggleColors = () => {
+    setShowColors(!showColors);
+    setShowLabels(false);
+    setShowSeries(false);
+  };
+  const [selectedColor, setSelectedColor] = useState('#00FF00');
+  const [activeCategory, setActiveCategory] = useState(null);
+
+  
 
   const [series, setSeries] = useState([20, 60, 20]);
   const [options, setOptions] = useState({
     chart: {
       type: chartType,
+      toolbar: {
+        tools: {
+          download: true, //Enable the download tool
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        },
+        autoSelected: 'zoom' 
+      },
       width: "100%",
       foreColor: JSON.parse(sessionStorage.getItem("openlap-settings"))
         ?.darkMode
         ? "#ffffff"
         : "#000000", // TODO: Need to find a way to change the legend color dynamically
     },
+    title:{
+      text:''
+    },
     xaxis: {
       name: "categories", // field
       seriesName: "values", // field
+      title:{
+        text:""
+      },
       unique: false, // Custom property
     },
+    yaxis:{title:{
+      text:""
+    }},
+    theme:{
+      monochrome:{
+        enabled:false
+      }
+    },
+    colors: [ 
+        "#33b2df",
+        "#546E7A",
+        "#d4526e",
+        "#13d8aa",
+        "#A5978B",
+        "#2b908f",
+        "#f9a3a4",
+        "#90ee7e",
+        "#f48024",
+        "#69d2e7"
+    ],
     headerNameOptions: "", // headerName
     headerNameSeries: "", // headerName
     labels: ["Category 1", "Category 2", "Category 3"],
@@ -78,7 +161,7 @@ export default function PieChart({
       .darkMode
       ? "#ffffff"
       : "#000000";
-    if (sessionOptions && sessionSeries) {
+    if (sessionOptions && sessionSeries && columnData.length > 0) {
       if (sessionOptions.chart.type === chartType) {
         if (!sessionOptions.default) {
           setOptions((prevOptions) => {
@@ -401,11 +484,39 @@ export default function PieChart({
     categoricalColumnField,
     categoricalColumnName,
     categoricalColumnDataArray,
+    defaultCategorical=true,
     unique = false
   ) => {
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
     let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
     let tempOptions;
+    
+    if (!defaultCategorical) {
+      setOptions((prevStateOptions) => {
+        tempOptions = {
+          ...prevStateOptions,
+          xaxis: {
+            ...prevStateOptions.xaxis,
+            name: categoricalColumnField,
+            seriesName: "",
+            unique,
+          },
+          labels: categoricalColumnDataArray,
+          default: false,
+          headerNameOptions: categoricalColumnName,
+          headerNameSeries: "",
+        };
+        setSeries(() => {
+          let tempSeries = calculateArray(categoricalColumnDataArray);
+          sessionStorage.setItem("chart-series", JSON.stringify(tempSeries));
+          return tempSeries;
+        });
+        sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
+        return tempOptions;
+      });
+      return;
+    }
+
     if (sessionOptions.default) {
       setOptions((prevStateOptions) => {
         tempOptions = {
@@ -526,10 +637,44 @@ export default function PieChart({
   const handleSetNumericalSeries = (
     numericalColumnField,
     numericalColumnName,
-    numericalColumnDataArray
+    numericalColumnDataArray,
+    defaultNumerical=true,
+    update
   ) => {
     let sessionOptions = JSON.parse(sessionStorage.getItem("chart-options"));
     let sessionSeries = JSON.parse(sessionStorage.getItem("chart-series"));
+
+    if (!defaultNumerical)
+      {
+        setOptions((prevState) => {
+          let tempOptions = {
+            ...prevState,
+            xaxis: {
+              ...prevState.xaxis,
+              name: "",
+              seriesName: numericalColumnField,
+            },
+            headerNameOptions: "",
+            headerNameSeries: numericalColumnName,
+            /* labels: numericalColumnDataArray.map(
+              (row, index) => `Category ${index + 1}`
+            ), */
+            default: false,
+          };
+          sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
+          return tempOptions;
+        });
+  
+        setSeries(() => {
+          sessionStorage.setItem(
+            "chart-series",
+            JSON.stringify(numericalColumnDataArray)
+          );
+          return numericalColumnDataArray;
+        });
+        return;
+      }
+ 
     // Still default state
     if (sessionOptions.default) {
       setOptions((prevState) => {
@@ -542,9 +687,9 @@ export default function PieChart({
           },
           headerNameOptions: "",
           headerNameSeries: numericalColumnName,
-          labels: numericalColumnDataArray.map(
+          /* labels: numericalColumnDataArray.map(
             (row, index) => `Category ${index + 1}`
-          ),
+          ), */
           default: false,
         };
         sessionStorage.setItem("chart-options", JSON.stringify(tempOptions));
@@ -692,17 +837,126 @@ export default function PieChart({
       return tempSeries;
     });
   };
+  const handleTitleChange = (e) => {
+    setOptions({
+      ...options,
+      title: {
+        ...options.title,
+        text: e.target.value
+      }
+    });
+  };
 
-  return (
-    <>
-      <Grid container sx={{ minHeight: "45vh" }}>
-        <Grid
-          item
-          xs={12}
-          sm={openEditor.open ? 8 : 12}
-        >
-          <Grid container justifyContent="center" spacing={2} sx={{ mb: 2 }}>
-            <Grid item>
+  const handleHorizontalLabelChange= (e)=>{
+    setOptions(
+      {
+        ...options,
+        xaxis:{
+          ...options.xaxis,
+          title:{
+            text: e.target.value
+          } 
+        }
+      }
+    )
+  }
+  const handleVerticalLabelChange= (e)=>{
+    setOptions(
+      {
+        ...options,
+        yaxis:{
+          ...options.yaxis,
+          title:{
+        text:e.target.value
+          } 
+        }
+      }
+    )
+  }
+  const handleColorChange = (e) => {
+    setOptions(
+      e
+    );
+
+    const removedElement = series.pop(); 
+    setSeries([...series]);
+
+
+    
+    setSeries([...series, removedElement]); 
+    setOptions({ ...options }); 
+
+  };
+  const handleMeanAnnotation= ()=>{
+    let mean=computeMean();
+    setOptions(
+      {
+        ...options,
+        annotations: {
+          yaxis: [
+            {
+              y: mean,
+              borderColor: '#FF0000',
+              label: {
+                borderColor: '#FF0000',
+                style: {
+                  color: '#fff',
+                  background: '#FF0000'
+                },
+                text: 'Y-axis annotation on '+mean
+              }
+            }
+          ]
+        }
+      }
+    );
+  };
+
+  const handleResetMeanAnnotation= ()=>{
+    //TODO: To remove added annotations
+    const {annotations,...newOptions}=options;
+    setOptions(newOptions);
+  }
+
+  const computeMean= () =>{
+    var sum=0;
+    for(var i=0;i<series[0].data.length;i++)
+    {
+      sum+=series[0].data[i];
+    }
+    return sum/series[0].data.length;
+  }
+
+  const handleColorPick = (color) => {
+    if (activeCategory !== null) {
+      const newOptions = { ...options };
+      newOptions.colors[activeCategory] = color.hex;
+      handleColorChange(newOptions); // Assuming this function updates state with newOptions
+      setSelectedColor(color.hex);
+    }
+  };
+
+  const handleSeriesColorChange = (index) => {
+    setActiveCategory(index);
+    setSelectedColor(options.colors[index] || '#000000');
+  };
+
+  const handleChange= (event, newValue)=>
+    {
+      setValue(newValue);
+    }
+      
+    return (
+      <Grid container sx={{ minHeight: '45vh' }}>
+       < Grid item xs={12} sx={{ textAlign: 'right' }}>
+          <Button onClick={toggleSettings}>
+            {openSettings ? 'Hide Settings' : 'Show Settings'}
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={openSettings ? 9 : 12}>
+          <Grid container alignItems="center">
+            <Grid item xs={12} md={2}>
+              {/* Assuming CategoricalDropdown component is defined elsewhere */}
               <CategoricalDropdown
                 axisLabel={"Slice titles"}
                 series={series}
@@ -716,57 +970,94 @@ export default function PieChart({
                 toggleEditPanel={toggleEditPanel}
               />
             </Grid>
-            <Grid item>
-              <NumericalDropdown
-                axisLabel={"Slice values"}
-                series={series}
-                options={options}
-                dataState={dataState}
-                handleSetNumericalSeries={handleSetNumericalSeries}
-                handleDeleteNumericalSeries={handleDeleteNumericalSeries}
-                openEditor={openEditor}
-                handleEditColumnData={handleEditColumnData}
-                handleNameColumn={handleNameColumn}
-                toggleEditPanel={toggleEditPanel}
-              />
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid container justifyContent="center">
-              <Grid item xs={12} sx={{ height: "500px" }}>
-                <Chart
-                  options={options}
+            <Grid item xs={12} md={2}>
+                <NumericalDropdown
+                  axisLabel={"Slice values"}
                   series={series}
-                  type={chartType}
-                  height="100%"
+                  options={options}
+                  dataState={dataState}
+                  handleSetNumericalSeries={handleSetNumericalSeries}
+                  handleDeleteNumericalSeries={handleDeleteNumericalSeries}
+                  openEditor={openEditor}
+                  handleEditColumnData={handleEditColumnData}
+                  handleNameColumn={handleNameColumn}
+                  toggleEditPanel={toggleEditPanel}
                 />
+              </Grid>
+            <Grid item xs={12} md={10}>
+              <Grid container justifyContent="center">
+                <Grid item xs={12} sx={{ height: '500px', mb: 2 }}>
+                  <Chart
+                    options={options}
+                    series={series}
+                    type={chartType}
+                    height="100%"
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <Fade
-            {...(Boolean(open) ? { timeout: 1000 } : {})}
-            in={Boolean(open)}
-          >
-            <Box>
-              {openEditor.open && (
-                <EditPanel
-                columns={columns}
-                dataState={dataState}
-                rows={rows}
-                toggleEditPanel={toggleEditPanel}
-                handleAddNewRows={handleAddNewRows}
-                handleDeleteIndicatorData={handleDeleteIndicatorData}
-                handleProcessRowUpdate={handleProcessRowUpdate}
-                handleRenameColumn={handleRenameColumn}
-                />
-              )}
+        <Grid item xs={12} sm={openSettings ? 3 : 'auto'}>
+          <Collapse in={openSettings} timeout="auto" unmountOnExit>
+            <Box p={2} sx={{ width: '100%', maxWidth: '300px', boxSizing: 'border-box' }}>
+              <TabContext value={value}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <TabList onChange={handleChange}>
+                    <Tab label="Labels" value="1" />
+                    <Tab label="Colours" value="2" />
+                    {/* <Tab label="Series" value="3" /> */}
+                  </TabList>
+                </Box>
+                <TabPanel value="1">
+                  <Box mt={2}>
+                    <TextField
+                      value={options.title.text}
+                      label="Title"
+                      onChange={handleTitleChange}
+                      fullWidth
+                    />
+                  </Box>
+                  <Box mt={2}>
+                    <TextField
+                      value={options.xaxis.title.text}
+                      label="x-axis"
+                      onChange={handleHorizontalLabelChange}
+                      fullWidth
+                    />
+                  </Box>
+                  <Box mt={2}>
+                    <TextField
+                      value={options.yaxis.title.text}
+                      label="y-axis"
+                      onChange={handleVerticalLabelChange}
+                      fullWidth
+                    />
+                  </Box>
+                </TabPanel>
+                <TabPanel value="2">
+                  <Box mt={2}>
+                  {options.labels.map((s, index) => (
+                    <Box key={s} mt={2}>
+                      <label>{s} : </label>
+                      <Button onClick={() => handleSeriesColorChange(index)}>
+                        Select Color
+                      </Button>
+                      {activeCategory === index && (
+                       <Box mt={2}>
+                        <Button onClick={() => setActiveCategory(null)}>X</Button>
+                       <SketchPicker color={selectedColor} onChange={handleColorPick} />
+            
+                     </Box>
+                      )}
+                    </Box>
+                  ))}
+                  </Box>
+                </TabPanel>
+              </TabContext>
             </Box>
-          </Fade>
+          </Collapse>
         </Grid>
       </Grid>
-    </>
-  );
-}
+    );
+  }
