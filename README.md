@@ -4,16 +4,14 @@
 
 The aim of this semester’s IDEA lab is to co-design and implement Learning Analytics indicators in CourseMapper using OpenLAP. CourseMapper is a MOOC platform developed at the UDE Social Computing Group.
 
-## OpenLAP Application Web Architecture
-
-![OpenLAP Architecture](architecture-diagram.png)
+## OpenLAP Application Architecture
 
 **Frontend:**
-- Developed using React and Vite.
+- Developed using React.
 - Utilizes various libraries for UI components, data visualization, and state management.
 
 **Backend:**
-- Implemented using Node.js and Express.
+- Implemented using Spring Boot.
 - Connects to a MongoDB database for storing user data and learning analytics indicators.
 
 **Additional Libraries Used:**
@@ -26,28 +24,38 @@ The aim of this semester’s IDEA lab is to co-design and implement Learning Ana
 ## Screenshots of the Project and Visualizations
 
 ### Dashboard
-![Dashboard](screenshots/dashboard.png)
+![image](https://github.com/user-attachments/assets/417243b5-b52f-462d-b0c6-ae674c7ef0d3)
 
-### Course Analytics
-![Course Analytics](screenshots/course-analytics.png)
+### Specification Card
+![image](https://github.com/user-attachments/assets/b6413d68-76a8-4007-9449-61c3eb786898)
 
-### User Engagement
-![User Engagement](screenshots/user-engagement.png)
+
+### Graph Customization
+![image](https://github.com/user-attachments/assets/45ca88f2-1659-4266-a8d8-d7cb0d55b199)
+
 
 ## Group Members
 
-- John Doe
-- Jane Smith
-- Alice Johnson
-- Bob Brown
+- Ahmed Mohamed
+- Mohamed Abdelmagied
+- Nitanshu Shahane
+- Nourhan Boudra
+- Matin Najafi
+- Chimamaka Uhieoma
+- Rebecca Mey
+- Jule Stamm
+- Elham Najafi
+
+
+
 
 ## Screencast of Project Live Demo
 
-[Watch the live demo on YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[Watch the live demo on YouTube](https://www.youtube.com/)
 
 ## Advertisement Video
 
-[Watch the advertisement video on YouTube](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[Watch the advertisement video on YouTube](https://www.youtube.com/watch?v=WcaYsIocyko)
 
 ## Project Setup
 
@@ -56,4 +64,3 @@ To get started with the project, follow these steps:
 1. **Clone the repository**:
    ```sh
    git clone <repository-url>
-   cd openlap-frontend
