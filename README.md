@@ -4,7 +4,10 @@
 
 The aim of this semester’s IDEA lab is to co-design and implement Learning Analytics indicators in CourseMapper using OpenLAP. CourseMapper is a MOOC platform developed at the UDE Social Computing Group.
 
-## OpenLAP Application Architecture
+## OpenLAP (ISC Creator) Architecture
+
+![image](https://github.com/user-attachments/assets/ff41ce0b-9aa3-4625-8814-b8944987b2cf)
+
 
 **Frontend:**
 - Developed using React.
