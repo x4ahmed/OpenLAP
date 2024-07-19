@@ -51,7 +51,7 @@ The aim of this semester’s IDEA lab is to co-design and implement Learning Ana
 
 ## Screencast of Project Live Demo
 
-[Watch the live demo on YouTube](https://www.youtube.com/)
+[Watch the live demo on YouTube](https://youtu.be/iNbDGpSRzFw)
 
 ## Advertisement Video
 
