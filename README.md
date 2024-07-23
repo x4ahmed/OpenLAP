@@ -59,11 +59,3 @@ The aim of this semester’s IDEA lab is to co-design and implement Learning Ana
 ## Advertisement Video
 
 [Watch the advertisement video on YouTube](https://www.youtube.com/watch?v=WcaYsIocyko)
-
-## Project Setup
-
-To get started with the project, follow these steps:
-
-1. **Clone the repository**:
-   ```sh
-   git clone <repository-url>
