@@ -252,8 +252,7 @@ const ISCCreatorHeader = ({
         { !userFinalizeSelection &&(
           <Stepper  activeStep={activeStep} alternativeLabel>
             {steps.map((step, index) => {
-              const isDisabled = activeStep < index || activeStep === 5;
-
+              const isDisabled = activeStep < index || activeStep === 5; 
               return (
                 <Step key={index}>
                   <Tooltip

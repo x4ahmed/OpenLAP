@@ -30,7 +30,6 @@ import ISCCreatorHeader from "./ISCCreatorHeader";
 import ChartList from "./Visualization/components/ChartList";
 
 export default function ISCCreator() {
-  const [hover, setHover] = useState(false);
   const stepsInitial = [
     "Fill the informations of the indicator",
     "Choose the start method",
@@ -398,7 +397,7 @@ export default function ISCCreator() {
     }
   };
   // This function is for the back button in visualization part
-  const handleBack11ButtonClick = () => {
+  const handleBackFromVisualizationStep = () => {
     if (userSelectsOnlyVisualization) {
       toggleUserSelectsVisualization();
       setUserSelectsOnlyVisualization(false);
@@ -413,7 +412,7 @@ export default function ISCCreator() {
     toggleUserSelectsVisualization();
   };
 
-  const handleGoBackToSelectVisualization = () => {
+  const handleBackFromMethodStep = () => {
     if (userSelectsOnlyVisualization) {
       toggleUserSelectsVisualization();
       toggleUserSelectsDataset();
@@ -426,7 +425,7 @@ export default function ISCCreator() {
     }
   };
 
-  const handleGoBackToSelectDataSetGenerationMethod = () => {
+  const handleBackToMethodSelection = () => {
     setDataState({
       ...dataState,
       status: false,
@@ -462,28 +461,28 @@ export default function ISCCreator() {
   };
   const stepActions = {
     "1_0": [toggleUserCreatesIndicator],
-    "2_1": [handleBack11ButtonClick],
-    "2_0": [handleBack11ButtonClick, toggleUserCreatesIndicator],
-    "3_2": [handleGoBackToSelectVisualization],
-    "3_1": [handleGoBackToSelectVisualization, handleBack11ButtonClick],
-    "3_0": [handleGoBackToSelectVisualization, handleBack11ButtonClick, toggleUserCreatesIndicator],
-    "4_3": [handleGoBackToSelectDataSetGenerationMethod],
-    "4_2": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
-    "4_1": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, handleBack11ButtonClick],
-    "4_0": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, handleBack11ButtonClick, toggleUserCreatesIndicator]
+    "2_1": [handleBackFromVisualizationStep],
+    "2_0": [handleBackFromVisualizationStep, toggleUserCreatesIndicator],
+    "3_2": [handleBackFromMethodStep],
+    "3_1": [handleBackFromMethodStep, handleBackFromVisualizationStep],
+    "3_0": [handleBackFromMethodStep, handleBackFromVisualizationStep, toggleUserCreatesIndicator],
+    "4_3": [handleBackToMethodSelection],
+    "4_2": [handleBackToMethodSelection, handleBackFromMethodStep],
+    "4_1": [handleBackToMethodSelection, handleBackFromMethodStep, handleBackFromVisualizationStep],
+    "4_0": [handleBackToMethodSelection, handleBackFromMethodStep, handleBackFromVisualizationStep, toggleUserCreatesIndicator]
   };
   
   const stepActionsNonVisualization = {
     "1_0": [toggleUserCreatesIndicator],
-    "2_1": [handleGoBackToSelectVisualization],
-    "2_0": [handleGoBackToSelectVisualization, toggleUserCreatesIndicator],
-    "3_2": [handleGoBackToSelectDataSetGenerationMethod],
-    "3_1": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
-    "3_0": [handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, toggleUserCreatesIndicator],
-    "4_3": [handleBack11ButtonClick],
-    "4_2": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod],
-    "4_1": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization],
-    "4_0": [handleBack11ButtonClick, handleGoBackToSelectDataSetGenerationMethod, handleGoBackToSelectVisualization, toggleUserCreatesIndicator]
+    "2_1": [handleBackFromMethodStep],
+    "2_0": [handleBackFromMethodStep, toggleUserCreatesIndicator],
+    "3_2": [handleBackToMethodSelection],
+    "3_1": [handleBackToMethodSelection, handleBackFromMethodStep],
+    "3_0": [handleBackToMethodSelection, handleBackFromMethodStep, toggleUserCreatesIndicator],
+    "4_3": [handleBackFromVisualizationStep],
+    "4_2": [handleBackFromVisualizationStep, handleBackToMethodSelection],
+    "4_1": [handleBackFromVisualizationStep, handleBackToMethodSelection, handleBackFromMethodStep],
+    "4_0": [handleBackFromVisualizationStep, handleBackToMethodSelection, handleBackFromMethodStep, toggleUserCreatesIndicator]
   };
   
   const handleBack = (index) => {
@@ -785,7 +784,7 @@ export default function ISCCreator() {
                         <Button
                           variant="outlined"
                           startIcon={<KeyboardArrowLeftIcon />}
-                          onClick={handleBack11ButtonClick}
+                          onClick={handleBackFromVisualizationStep}
                         >
                           Back
                         </Button>
@@ -815,7 +814,7 @@ export default function ISCCreator() {
                         <Button
                           variant="outlined"
                           startIcon={<KeyboardArrowLeftIcon />}
-                          onClick={handleBack11ButtonClick}
+                          onClick={handleBackFromVisualizationStep}
                         >
                           Back
                         </Button>

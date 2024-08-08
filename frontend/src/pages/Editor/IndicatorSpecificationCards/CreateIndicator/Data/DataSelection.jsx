@@ -466,13 +466,13 @@ export default function DataSelection({
   }, []);
 
   //These two functions are for the back buttons in creating dataset
-  const handleBack1ButtonClick = () => {
+  const handleBackToMethodSelection = () => {
     // TODO: Confirmation needed
     // handleUnpopulateData();
     backToDataSelection();
     setActiveStep(activeStep - 1);
   };
-  const handleBack2ButtonClick = () => {
+  const handleBackFromMethodStep = () => {
     if (userSelectsOnlyVisualization) {
       toggleUserSelectsVisualization();
       toggleUserSelectsDataset();
@@ -493,7 +493,7 @@ export default function DataSelection({
             <Grid container justifyContent="space-between">
               <Button
                 variant="outlined"
-                onClick={handleBack2ButtonClick}
+                onClick={handleBackFromMethodStep}
                 startIcon={<KeyboardArrowLeftIcon />}
               >
                 Back
@@ -585,7 +585,7 @@ export default function DataSelection({
               <Button
                 variant="outlined"
                 startIcon={<KeyboardArrowLeftIcon />}
-                onClick={handleBack1ButtonClick}
+                onClick={handleBackToMethodSelection}
               >
                 Back
               </Button>
